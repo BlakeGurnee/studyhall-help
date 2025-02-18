@@ -24,177 +24,18 @@
 }
 </style>
 
-<script>
-	function getScript(src) {
-    var headElm = document.head || document.getElementsByTagName('head')[0];
-    var script = document.createElement("script");
-    var once = true;
-    script.async = "async";
-    script.type = "text/javascript";
-    script.charset = "UTF-8";
-    script.src = src;
-    script.onload = script.onreadystatechange = function() {
-        if (once && (!script.readyState || /loaded|complete/.test(script.readyState))) {
-            once = false;         
-            script.onload = script.onreadystatechange = null;
-			console.log("okeey");
-        }
-    };
-	  headElm.appendChild(script);
-}
-
- 
-	getScript("https://api.adinplay.com/libs/aiptag/pub/GDU/paperio4.live/tag.min.js");
- 
-	window.aiptag = window.aiptag || {cmd: []};
-	aiptag.cmd.display = aiptag.cmd.display || [];
-	aiptag.cmd.player = aiptag.cmd.player || [];
-
-	//CMP tool settings
-	aiptag.cmp = {
-		show: true,
-		position: "centered",  //centered, bottom
-		button: true,
-		buttonText: "Privacy settings",
-		buttonPosition: "bottom-left" //bottom-left, bottom-right, top-left, top-right
-	}
-
-	aiptag.cmd.player.push(function() {
-		aiptag.adplayer = new aipPlayer({
-			AD_WIDTH: 960,
-			AD_HEIGHT: 540,
-			AD_DISPLAY: 'center', //default, fullscreen, center, fill
-			LOADING_TEXT: 'loading advertisement',
-			PREROLL_ELEM: function(){return document.getElementById('preroll')},
-			AIP_COMPLETE: function (evt){
-				
-   //skip_play();
- 			},
-			AIP_REMOVE: function ()  {
-				// Here it's safe to remove the PREROLL_ELEM from the page if you want. But it's not recommend.
-			}
-		});
-	});
-	
-	 
- 
-				function show_preroll() {
- 					if (typeof aiptag.adplayer !== 'undefined') {
-				 	aiptag.cmd.player.push(function() { aiptag.adplayer.startPreRoll(); });
-					} else {
-				    	
-   //skip_play();
- 
-					}
-				}
-	
-</script>
-
-
-<div id="preroll"></div>
- 
-<!-- Responsive Menu -->
-<nav>
-<div class="navigation" role="navigation">
-	<div class="nav-bar">
-	<a href="https://lessons1.world"><div class="logo">Lessons 1</div></a>
-    <div class="mobile-icon">.</div>
-    <ul>
-<li class="Navigation-Button"><a target="_blank" href="https://lessons1.lol/"><i class="las la-home"></i><p>Lessons1</p></a></li>
-<li class="Navigation-Button"><a href="./"><i class="las la-home"></i><p>Home</p></a></li>
-			<li class="Navigation-Button"><a class="lesso" href="./lessons.php"><i class="las la-file"></i><p>Lessons</p></a></li>
-
-			<li class="Navigation-Button"><a href="./settings.php"><i class="las la-cog"></i><p>Settings</p></a></li>
-    </ul>
-   </div>
-  </div>
-  </nav>
-
-
-
-<script type="text/javascript">
-
-$(document).ready(function(){
-	
-	$('.mobile-icon').click( function() {
-		$('nav ul').toggleClass("showing");
-
-	});
-
-});
-
-
-
-
-
-</script>
-
-
-    
-	
-
-	
-	
-    <div class="Projects-Frame hidden">
-	
-		<br>
-		
-         <div id='paperio4-live_300x250' class='mry_1'>
-			<script type='text/javascript'>
-			aiptag.cmd.display.push(function() { aipDisplayTag.display('paperio4-live_300x250'); });
-			</script>
-         </div>						
-		 
-		 <br>
-        <div class="Projects-FrameBar">
-          <a href="https://lessons1.world">  <i id="close" class="las la-times-circle"></i></a>
-            <i id="fullscreen" class="las la-expand"></i>
-            
-        </div>
-        <iframe class="Projects-IFrame" src=""></iframe>
+<iframe class="Projects-IFrame" src="https://lessons1.world/files/PapaLouie3/">
+	<html>
+		<head></head>
+		<body style="background-color: #000;" data-new-gr-c-s-check-loaded="14.1223.0" data-gr-ext-installed="">
+    <script src="../ruffle/ruffle.js"></script>
+    <div class="swf" dir="ltr" style="text-align: left;" trbidi="on">
+            <ruffle-embed style="width: 100%; height: 100%;" pluginspage="http://www.macromedia.com/go/getflashplayer" src="game.swf" type="application/x-shockwave-flash"></ruffle-embed>
     </div>
-
-    <div class="hideAfterFullscreen">
-        <center>
-		
+</body>
+	</html>
+</iframe>
 	
-			
-		
-            <h1 style="margin-top: 50px; color: var(--text-color1)">Lesson List</h1>
-			
-					
-         <div id='paperio4-live_970x250' class='mry_2'>
-			<script type='text/javascript'>
-			aiptag.cmd.display.push(function() { aipDisplayTag.display('paperio4-live_970x250'); });
-			</script>
-         </div>					
-					<br>	
-         </center>
-        <hr>
-        <center style="padding: 2em 0 0 0">
-
-            <input type="text" class="Settings-TextInput" id="GameSearchBar" placeholder="Search For Lessons">
-        </center>
-    </div>
-
-    <div class="Projects-Container hideAfterFullscreen">
-       
-    </div>
-
-    <script src="./Assests/JS/aboutblank.js"></script>
-    <script src="./Assests/JS/options.js"></script>
-    <script src="./Assests/JS/g.js?dasd"></script>
-		
-
-<!-- Google tag (gtag.js) -->
-<script async src='https://www.googletagmanager.com/gtag/js?id=G-80ZNLPHMEE'></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-80ZNLPHMEE');
-</script>
 
 </body>
 </html>
