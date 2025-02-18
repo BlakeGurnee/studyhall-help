@@ -91,7 +91,7 @@ nav h1 {
     transition: .3s all ease;
 }
  
-#games {
+#lessons {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -100,7 +100,7 @@ nav h1 {
 
 }
  
-#games img {    height: 15.6vw;
+#lessons img {    height: 15.6vw;
     width: 15.6vw;
     border-radius: 1vw;
     margin: .5vw;
@@ -182,4 +182,15 @@ nav h1 {
     .featured .play-button i {
     font-size: 5vw;
     text-shadow: 0 0 100px #2c7ffc;
+    }
+    .Text p {
+        margin-top 25px;
+        margin-bottom 25px;
+    }
+    .Text {
+        overflow: scroll;
+        color: #FFFFFF;
+        width: 80%;
+        text-align: left;
+        margin-top: 40px;
     }
