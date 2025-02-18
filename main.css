@@ -109,7 +109,7 @@ nav h1 {
     transition: transform .2s;
 }
  
-#games img:hover {
+#lessons img:hover {
     transform: scale(1.01);
 }
 
@@ -183,10 +183,12 @@ nav h1 {
     font-size: 5vw;
     text-shadow: 0 0 100px #2c7ffc;
     }
+
     .Text p {
         margin-top 25px;
         margin-bottom 25px;
     }
+
     .Text {
         overflow: scroll;
         color: #FFFFFF;
