@@ -165,34 +165,34 @@ nav h1 {
     text-decoration: none;
 }
     
-    .featured .play-button {
+.featured .play-button {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 0.2s;
-    }
+}
     
-    .featured a:hover .play-button {
+.featured a:hover .play-button {
     opacity: 1;
     pointer-events: none;
-    }
+}
     
-    .featured .play-button i {
+.featured .play-button i {
     font-size: 5vw;
     text-shadow: 0 0 100px #2c7ffc;
-    }
+}
 
-    .Text p {
-        margin-top 25px;
-        margin-bottom 25px;
-    }
+.text p {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
 
-    .Text {
-        overflow: scroll;
-        color: #FFFFFF;
-        width: 80%;
-        text-align: left;
-        margin-top: 40px;
-    }
+.text {
+    overflow: scroll;
+    color: #FFFFFF;
+    width: 80%;
+    text-align: left;
+    margin-top: 40px;
+}
