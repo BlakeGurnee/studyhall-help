@@ -190,9 +190,8 @@ nav h1 {
 }
 
 .text {
-    overflow: scroll;
     color: #FFFFFF;
     width: 80%;
-    text-align: left;
+    text-align: center;
     margin-top: 40px;
 }
