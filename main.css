@@ -113,7 +113,7 @@ nav h1 {
     transform: scale(1.01);
 }
 
-.lessons h1 {
+#lessons h1 {
     font-size: 3.5vw;
     font-weight: 700;
     margin: 1vw 1vw .4vw 1vw;
