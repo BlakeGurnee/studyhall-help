@@ -5,10 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Studyhall-Help</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link id="favicon" rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="/main.css" />
   <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css" />
   <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
@@ -32,7 +30,7 @@
     <img src="/favicons/favicon1.png" class="favicon-option" onclick="updateFavicon('/favicons/favicon1.png')" alt="Favicon 1" />
     <img src="/favicons/favicon2.png" class="favicon-option" onclick="updateFavicon('/favicons/favicon2.png')" alt="Favicon 2" />
     <img src="/favicons/favicon3.png" class="favicon-option" onclick="updateFavicon('/favicons/favicon3.png')" alt="Favicon 3" />
-  </div>
+</div>
   <button onclick="applySettings()">Apply</button>
 </div>
 
@@ -142,18 +140,21 @@
   <script src="script.js"></script>
   <script>
     // Function to update favicon dynamically
-    function updateFavicon(faviconURL) {
-      let favicon = document.getElementById("favicon");
-      if (favicon) {
-        favicon.href = faviconURL;
-      } else {
+    function updateFavicon(faviconPath) {
+    let favicon = document.getElementById("dynamic-favicon");
+
+    if (!favicon) {
+        // If the favicon link tag doesn't exist, create it
         favicon = document.createElement("link");
-        favicon.id = "favicon";
+        favicon.id = "dynamic-favicon";
         favicon.rel = "icon";
-        favicon.href = faviconURL;
+        favicon.type = "image/png";
         document.head.appendChild(favicon);
-      }
     }
+
+    // Update the favicon's href attribute
+    favicon.href = faviconPath;
+}
     // Function to update the tab title from settings panel
     function applySettings() {
       const newTitle = document.getElementById("tabTitle").value;
