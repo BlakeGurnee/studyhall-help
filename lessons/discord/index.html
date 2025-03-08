@@ -11,25 +11,16 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background-color: #36393F;
         }
-        .discord-container {
+        iframe {
             width: 100%;
             height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
-    <div class="discord-container">
-        <script src='https://cdn.jsdelivr.net/npm/@widgetbot/crate@3' async defer>
-            new Crate({
-                server: '1347720436653228082', // Studyhall-help
-                channel: '1347720437819379753' // #general
-            });
-        </script>
-    </div>
+    <iframe src="https://e.widgetbot.io/channels/1347720436653228082/1347720437819379753"></iframe>
 </body>
 </html>
