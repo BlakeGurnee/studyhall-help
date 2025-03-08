@@ -205,3 +205,89 @@ nav h1 {
     margin-top: 150px;
 }
 
+#gearIcon {
+    position: absolute;
+    top: 50%;
+    right: 100px;
+    transform: translateY(-50%);
+    font-size: 3.5rem;
+      /* Inherit the text color from nav so that it doesn't override the nav background */
+    color: inherit;
+    cursor: pointer;
+}
+    /* Settings panel with modern black/gray theme */
+#settingsPanel {
+    display: none;
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    background: #333;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    width: 250px;
+}
+
+#settingsPanel h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+#settingsPanel label {
+      display: block;
+      margin-bottom: 5px;
+}
+
+#settingsPanel input[type="text"] {
+     width: 100%;
+     padding: 5px;
+     margin-bottom: 10px;
+     background: #444;
+     border: 1px solid #555;
+     border-radius: 4px;
+     color: #fff;
+     box-sizing: border-box;
+}
+
+#settingsPanel .favicon-options {
+     display: flex;
+     gap: 10px;
+     margin-bottom: 10px;
+}
+
+#settingsPanel .favicon-option {
+     width: 32px;
+     height: 32px;
+     cursor: pointer;
+     border: 2px solid transparent;
+}
+
+#settingsPanel .favicon-option:hover {
+    border-color: #fff;
+}
+
+#settingsPanel button {
+    padding: 5px 10px;
+    background: #555;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #ff4747;
+}
