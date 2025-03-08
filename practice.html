@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solve the Equation Challenge</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f7f7f7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+      h1 {
+        margin-top: 0;
+        color: #0066cc;
+      }
+      .equation-box {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+      .answer-container {
+        margin-bottom: 20px;
+      }
+      .answer-container input {
+        padding: 10px;
+        font-size: 1rem;
+        width: 60%;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+        transition: border-color 0.3s ease;
+      }
+      .answer-container input:focus {
+        border-color: #0066cc;
+        outline: none;
+      }
+      .answer-container button {
+        padding: 10px 20px;
+        font-size: 1rem;
+        margin-left: 10px;
+        border: none;
+        background-color: #0066cc;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .answer-container button:hover {
+        background-color: #0052a3;
+      }
+      #newProblemBtn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        border: none;
+        background-color: #28a745;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        display: none;
+        transition: background-color 0.3s ease;
+      }
+      #newProblemBtn:hover {
+        background-color: #218838;
+      }
+      #message {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Solve the Equation</h1>
+      <div class="equation-box" id="equationText"></div>
+      <div class="answer-container">
+        <input type="text" id="answerInput" placeholder="Enter value for x" />
+        <button onclick="checkAnswer()">Submit Answer</button>
+      </div>
+      <div id="message"></div>
+      <button id="newProblemBtn" onclick="generateProblem()">
+        New Problem
+      </button>
+    </div>
+
+    <script>
+      let currentSolution = null;
+
+      // Generates a random linear equation of the form ax + b = c.
+      function generateProblem() {
+        // Randomly choose coefficients a and x, ensuring a is not zero
+        const a = Math.floor(Math.random() * 10) + 1; // a between 1 and 10
+        const x = Math.floor(Math.random() * 10) + 1; // x between 1 and 10
+        const b = Math.floor(Math.random() * 21); // b between 0 and 20
+        const c = a * x + b; // c computed from ax + b
+
+        // Build the equation string
+        let equation = a + "x";
+        if (b > 0) {
+          equation += " + " + b;
+        } else if (b < 0) {
+          equation += " - " + Math.abs(b);
+        }
+        equation += " = " + c;
+
+        // Update the UI
+        document.getElementById("equationText").textContent = equation;
+        currentSolution = x;
+        document.getElementById("message").innerHTML = "";
+        document.getElementById("answerInput").value = "";
+        document.getElementById("newProblemBtn").style.display = "none";
+      }
+
+      // Checks if the submitted answer is correct
+      function checkAnswer() {
+        const userAnswer = parseInt(
+          document.getElementById("answerInput").value.trim(),
+          10
+        );
+        if (userAnswer === currentSolution) {
+          document.getElementById("message").innerHTML =
+            "<span style='color: green;'>Correct! Good job!</span>";
+          document.getElementById("newProblemBtn").style.display =
+            "inline-block";
+        } else {
+          document.getElementById("message").innerHTML =
+            "<span style='color: red;'>Incorrect. Try again.</span>";
+        }
+      }
+
+      // Generate the first problem when the page loads
+      window.onload = generateProblem;
+    </script>
+  </body>
+</html>
