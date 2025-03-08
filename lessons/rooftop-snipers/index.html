@@ -1,18 +1,59 @@
 <!DOCTYPE html>
 <html lang="en-us">
-    <head>
-      <title>Rooftop Snipers</title>
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <meta name="title" content="Rooftop Snipers">
-       <link rel="stylesheet" href="style.css">
-       <script src="./UnityLoader.js"></script>
-        <script>
-            var gameInstance = UnityLoader.instantiate("gameContainer", "/rooftop-snipers.json");
-        </script>
-    </head>
-    <body style="margin: 0; overflow: hidden;">
-        <div class="webgl-content">
-            <div id="gameContainer" style="width: 100%; height: 100%; margin: 0;"></div>
-        </div>
-    </body>
-</html>    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="title" content="Rooftop Snipers">
+    <title>Rooftop Snipers</title>
+    
+    <!-- Link to external styles -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Ensure UnityLoader is correctly referenced -->
+    <script src="./UnityLoader.js"></script>
+
+    <style>
+        /* Remove margins, make full screen */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+        }
+
+        /* Fullscreen game container */
+        #gameContainer {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Unity Game Container -->
+    <div id="gameContainer"></div>
+
+    <script>
+        // Load the game after the page has fully loaded
+        window.onload = function() {
+            if (typeof UnityLoader !== "undefined") {
+                var gameInstance = UnityLoader.instantiate("gameContainer", "/rooftop-snipers.json", {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
+
+                // Resize game on window resize
+                window.addEventListener("resize", function() {
+                    gameInstance.SetFullscreen(1);
+                });
+            } else {
+                console.error("UnityLoader.js failed to load. Check the file path.");
+            }
+        };
+    </script>
+</body>
+</html>
