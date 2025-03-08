@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: white;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            display: flex;
+            width: 100%;
+        }
+        .sidebar {
+            width: 250px;
+            background: #2c2f33;
+            padding: 20px;
+        }
+        .sidebar h2 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-align: center;
+            color: #fff;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #b9bbbe;
+        }
+        .sidebar .active, .sidebar li:hover {
+            background: #3a3d42;
+            color: #fff;
+        }
+        .chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #36393f;
+        }
+        .chat-header {
+            padding: 15px;
+            background: #2f3136;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            background: #424549;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .message strong {
+            color: #ffffff;
+            margin-right: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: #2f3136;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #40444b;
+            color: white;
+            font-size: 14px;
+        }
+        .chat-input button {
+            padding: 10px;
+            margin-left: 10px;
+            background: #5865f2;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .chat-input button:hover {
+            background: #4752c4;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <aside class="sidebar">
+            <h2>Server</h2>
+            <nav>
+                <ul>
+                    <li class="active" onclick="changeChannel('1347720437819379753', this)">General</li>
+                    <li onclick="changeChannel('channel2', this)">General 2</li>
+                    <li onclick="changeChannel('channel3', this)">General 3</li>
+                    <li onclick="changeChannel('bots', this)">Bots</li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="chat-window">
+            <header class="chat-header" id="chat-title">General</header>
+            <div class="messages" id="messages"></div>
+            <footer class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type a message..." onkeydown="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send</button>
+            </footer>
+        </main>
+    </div>
+    <script>
+        let currentChannelId = "1347720437819379753";
+        const apiBaseUrl = "http://localhost:3000"; 
+
+        async function fetchMessages() {
+            const res = await fetch(`${apiBaseUrl}/messages/${currentChannelId}`);
+            const messages = await res.json();
+            const chatbox = document.getElementById("messages");
+            chatbox.innerHTML = messages
+                .map(msg => `<div class="message"><img class="avatar" src="${msg.avatar}" /><strong>${msg.username}:</strong> ${msg.content}</div>`)
+                .join("");
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const content = document.getElementById("messageInput").value;
+            if (!content.trim()) return;
+            await fetch(`${apiBaseUrl}/send`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ channelId: currentChannelId, content })
+            });
+            document.getElementById("messageInput").value = "";
+            fetchMessages();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        function changeChannel(channelId, element) {
+            currentChannelId = channelId;
+            document.getElementById("chat-title").innerText = element.innerText;
+            document.querySelectorAll(".sidebar li").forEach(li => li.classList.remove("active"));
+            element.classList.add("active");
+            fetchMessages();
+        }
+
+        setInterval(fetchMessages, 5000);
+        fetchMessages();
+    </script>
+</body>
+</html>
