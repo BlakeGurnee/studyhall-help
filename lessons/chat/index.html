@@ -122,7 +122,7 @@
     </div>
 
     <script>
-        const API_BASE = "https://your-render-service.onrender.com";
+        const API_BASE = "https://your-render-service.onrender.com"; // UPDATE THIS
         let currentChannel = "1347720437819379753";
 
         // Auth handling
@@ -137,7 +137,6 @@
             }
         }
 
-        // Message handling
         async function fetchMessages() {
             try {
                 const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
@@ -147,9 +146,9 @@
                 messagesContainer.innerHTML = messages.map(msg => `
                     <div class="message">
                         <img class="avatar" 
-                             src="${msg.avatar}" 
-                             alt="${msg.username}"
-                             onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                            src="${msg.avatar}" 
+                            alt="${msg.username}"
+                            onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
                         <div>
                             <strong>${msg.username}</strong>
                             <p>${msg.content}</p>
