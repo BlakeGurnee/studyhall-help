@@ -6,41 +6,39 @@
     <title>StudyHall Chat</title>
     <style>
         :root {
-            --background: #1e1e1e;
+            --background: #1a1a1a;
             --primary: #5865f2;
             --text: #ffffff;
             --secondary: #2c2f33;
+            --error: #ed4245;
         }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background: var(--background);
             color: var(--text);
             height: 100vh;
             display: flex;
         }
 
-        /* Modal Styles */
-        .modal {
+        /* Error Toast */
+        .toast {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--error);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            animation: slideUp 0.3s ease;
             z-index: 1000;
         }
 
-        .modal-content {
-            background: var(--secondary);
-            padding: 2rem;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
+        @keyframes slideUp {
+            from { bottom: -50px; }
+            to { bottom: 20px; }
         }
 
         /* Chat Layout */
@@ -53,8 +51,26 @@
         .sidebar {
             width: 240px;
             background: var(--secondary);
-            padding: 1rem;
+            padding: 20px;
             border-right: 1px solid #36393f;
+        }
+
+        .channel-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .channel {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .channel.active {
+            background: #3a3d42;
         }
 
         .chat-window {
@@ -63,10 +79,9 @@
             flex-direction: column;
         }
 
-        /* Messages */
         .messages {
             flex: 1;
-            padding: 1rem;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column-reverse;
@@ -74,205 +89,199 @@
 
         .message {
             display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
+            gap: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
             background: var(--secondary);
             border-radius: 8px;
-            animation: fadeIn 0.3s ease;
+            animation: messageAppear 0.3s ease;
         }
 
-        @keyframes fadeIn {
+        @keyframes messageAppear {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
         }
 
-        /* Input Area */
         .chat-input {
-            padding: 1rem;
+            padding: 20px;
             background: var(--secondary);
             border-top: 1px solid #36393f;
             display: flex;
-            gap: 1rem;
+            gap: 16px;
         }
 
-        .chat-input input {
+        input[type="text"] {
             flex: 1;
-            padding: 0.8rem;
-            border: none;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #40444b;
+            border-radius: 8px;
             background: #40444b;
             color: var(--text);
+            font-size: 16px;
         }
 
-        .chat-input button {
-            padding: 0.8rem 1.5rem;
+        button {
+            padding: 12px 24px;
             background: var(--primary);
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             color: var(--text);
             cursor: pointer;
             transition: background 0.2s;
         }
 
-        .chat-input button:hover {
+        button:hover {
             background: #4752c4;
         }
     </style>
 </head>
 <body>
-    <!-- Sign-in Modal -->
-    <div id="signin-modal" class="modal">
-        <div class="modal-content">
-            <h2>Welcome to StudyHall Chat</h2>
-            <form onsubmit="handleSignIn(event)">
-                <input 
-                    type="text" 
-                    id="usernameInput" 
-                    placeholder="Enter your name"
-                    required
-                    autofocus
-                >
-                <button type="submit">Join Chat</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Chat Interface -->
     <div class="chat-container">
         <aside class="sidebar">
-            <h2>Channels</h2>
-            <nav>
-                <ul id="channel-list">
-                    <li class="channel active" data-channel="general">📚 General</li>
-                    <li class="channel" data-channel="general2">💬 General 2</li>
-                    <li class="channel" data-channel="games">🎮 Game Requests</li>
-                </ul>
-            </nav>
+            <h2>StudyHall Channels</h2>
+            <ul class="channel-list">
+                <li class="channel active" data-channel="general">📚 General Chat</li>
+                <li class="channel" data-channel="help">❓ Study Help</li>
+                <li class="channel" data-channel="games">🎮 Game Night</li>
+            </ul>
         </aside>
         
         <main class="chat-window">
-            <header class="chat-header">
-                <h1 id="channel-title">General</h1>
-            </header>
             <div class="messages" id="messages"></div>
             <div class="chat-input">
                 <input 
                     type="text" 
-                    id="messageInput" 
+                    id="messageInput"
                     placeholder="Type your message..."
                     disabled
                 >
-                <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
+                <button id="sendButton" disabled>Send</button>
             </div>
         </main>
     </div>
 
     <script>
-        // Configuration
         const API_URL = "https://your-render-service.onrender.com"; // UPDATE THIS
-        const CHANNELS = {
+        const CHANNEL_IDS = {
             general: "1347720437819379753",
-            general2: "1347720437819379755",
-            games: "1347720437819379754"
+            help: "1347720437819379754",
+            games: "1347720437819379755"
         };
 
-        // State
         let currentChannel = "general";
+        let username = localStorage.getItem("studyhall-username");
 
-        // Auth Handling
-        function handleSignIn(event) {
-            event.preventDefault();
-            const username = document.getElementById("usernameInput").value.trim();
+        // Auth flow
+        if (!username) {
+            username = prompt("Welcome to StudyHall!\nPlease enter your display name:");
             if (username) {
-                localStorage.setItem("studyhall-username", username);
-                toggleUIState(true);
-                document.getElementById("signin-modal").style.display = "none";
+                localStorage.setItem("studyhall-username", username.trim());
+            } else {
+                alert("You must enter a name to continue.");
+                window.location.reload();
             }
         }
 
-        // Message Handling
+        // UI Elements
+        const messageInput = document.getElementById("messageInput");
+        const sendButton = document.getElementById("sendButton");
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+
+        // Message handling
         async function fetchMessages() {
             try {
-                const response = await fetch(`${API_URL}/messages/${CHANNELS[currentChannel]}`);
-                if (!response.ok) throw new Error("Network response error");
-                const messages = await response.json();
+                const response = await fetch(`${API_URL}/messages/${CHANNEL_IDS[currentChannel]}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
-                document.getElementById("messages").innerHTML = messages
-                    .map(msg => `
-                        <div class="message">
-                            <img class="avatar" 
-                                 src="${msg.avatar}" 
-                                 alt="${msg.username}'s avatar"
-                                 onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
-                            <div>
-                                <strong>${msg.username}</strong>
-                                <p>${msg.content}</p>
-                            </div>
-                        </div>
-                    `).join("");
+                const messages = await response.json();
+                renderMessages(messages);
             } catch (error) {
-                console.error("Fetch error:", error);
-                alert("Failed to load messages. Please refresh.");
+                showError(`Failed to load messages: ${error.message}`);
             }
+        }
+
+        function renderMessages(messages) {
+            const container = document.getElementById("messages");
+            container.innerHTML = messages.map(msg => `
+                <div class="message">
+                    <img class="avatar" 
+                         src="${msg.avatar}" 
+                         alt="${msg.username}" 
+                         onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                    <div>
+                        <strong>${msg.username}</strong>
+                        <p>${msg.content}</p>
+                    </div>
+                </div>
+            `).join("");
         }
 
         async function sendMessage() {
-            const input = document.getElementById("messageInput");
-            const content = input.value.trim();
+            const content = messageInput.value.trim();
             if (!content) return;
 
             try {
-                await fetch(`${API_URL}/send`, {
+                const response = await fetch(`${API_URL}/send`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer studyhall"
+                    },
                     body: JSON.stringify({
-                        channelId: CHANNELS[currentChannel],
+                        channelId: CHANNEL_IDS[currentChannel],
                         content: content,
-                        username: localStorage.getItem("studyhall-username")
+                        username: username
                     })
                 });
-                input.value = "";
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                messageInput.value = "";
                 fetchMessages();
             } catch (error) {
-                console.error("Send error:", error);
-                alert("Failed to send message. Try again.");
+                showError(`Failed to send message: ${error.message}`);
             }
         }
 
-        // Channel Switching
+        // Channel switching
         document.querySelectorAll(".channel").forEach(channel => {
             channel.addEventListener("click", function() {
-                currentChannel = this.dataset.channel;
                 document.querySelectorAll(".channel").forEach(c => c.classList.remove("active"));
                 this.classList.add("active");
-                document.getElementById("channel-title").textContent = this.textContent;
+                currentChannel = this.dataset.channel;
                 fetchMessages();
             });
         });
 
-        // Initialization
-        document.addEventListener("DOMContentLoaded", () => {
-            if (!localStorage.getItem("studyhall-username")) {
-                document.getElementById("signin-modal").style.display = "flex";
-            } else {
-                toggleUIState(true);
+        // Event listeners
+        messageInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
-            fetchMessages();
-            setInterval(fetchMessages, 3000);
         });
 
-        function toggleUIState(active) {
-            document.getElementById("messageInput").disabled = !active;
-            document.getElementById("sendButton").disabled = !active;
-            if (active) document.getElementById("messageInput").focus();
+        sendButton.addEventListener("click", sendMessage);
+
+        // Initial load
+        fetchMessages();
+        setInterval(fetchMessages, 3000);
+
+        // Error handling
+        function showError(message) {
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
     </script>
 </body>
