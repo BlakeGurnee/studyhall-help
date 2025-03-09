@@ -1,291 +1,521 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Discord-Style Chat</title>
-   <style>
-        :root {
-            --bg-primary: #36393f;
-            --bg-secondary: #2f3136;
-            --bg-tertiary: #40444b;
-            --text-primary: #dcddde;
-            --text-secondary: #b9bbbe;
-            --border-color: #202225;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discord-Style Chat</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #36393f;
+        --bg-secondary: #2f3136;
+        --accent: #7289da;
+        --text-primary: #dcddde;
+        --text-secondary: #b9bbbe;
+        --border-color: #202225;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-        }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+      }
 
-        /* Login Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+      /* Modal (Authentication) */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
 
-        .modal-content {
-            background: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
-        }
+      .modal-content {
+        background: var(--bg-secondary);
+        padding: 2rem;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px;
+      }
 
-        .chat-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
+      .modal-content h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
 
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: var(--bg-secondary);
-            padding: 1rem;
-            border-right: 1px solid var(--border-color);
-        }
+      .modal-content input {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        background: var(--bg-primary);
+        border: none;
+        border-radius: 4px;
+        color: var(--text-primary);
+      }
 
-        .channel {
-            padding: 0.5rem;
-            margin: 0.25rem 0;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
+      .modal-content input::placeholder {
+        color: var(--text-secondary);
+      }
 
-        .channel.active {
-            color: var(--text-primary);
-        }
+      .modal-content button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--accent);
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
 
-        /* Messages Area */
-        .chat-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+      .modal-content p {
+        text-align: center;
+        margin-top: 1rem;
+      }
 
-        .messages {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+      .modal-content a {
+        color: var(--accent);
+        text-decoration: none;
+        cursor: pointer;
+      }
 
-        .message {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            width: 100%;
-            animation: messageIn 0.3s ease;
-        }
+      /* Only show one section at a time */
+      #loginSection,
+      #registerSection {
+        display: none;
+      }
 
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
+      /* Chat Interface */
+      .chat-container {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+      }
 
-        .message-content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        background: var(--bg-secondary);
+        padding: 1.5rem;
+        border-right: 1px solid var(--border-color);
+      }
 
-        .message-author {
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-        }
+      .sidebar h2 {
+        margin-bottom: 1rem;
+        text-align: center;
+      }
 
-        .message-text {
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            word-break: break-word;
-        }
+      .channels {
+        display: flex;
+        flex-direction: column;
+      }
 
-        /* Input Area */
-        .chat-input {
-            padding: 1rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 1rem;
-        }
+      .channel {
+        padding: 0.8rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: background 0.2s, color 0.2s;
+        border-radius: 4px;
+      }
 
-        input[type="text"] {
-            flex: 1;
-            padding: 0.75rem;
-            background: var(--bg-tertiary);
-            border: none;
-            border-radius: 4px;
-            color: var(--text-primary);
-        }
+      .channel.active {
+        background: var(--accent);
+        color: #fff;
+      }
 
-        @keyframes messageIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+      .channel:hover {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      /* Chat Main */
+      .chat-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-primary);
+      }
+
+      .messages {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end; /* New messages appear at the bottom */
+        gap: 1rem;
+      }
+
+      .message {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        animation: fadeInUp 0.3s ease;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--accent);
+      }
+
+      .message-content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .message-author {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .message-text {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        word-break: break-word;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Chat Input */
+      .chat-input {
+        display: flex;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border-color);
+      }
+
+      .chat-input input[type="text"] {
+        flex: 1;
+        padding: 0.75rem;
+        background: var(--bg-primary);
+        border: none;
+        border-radius: 4px;
+        color: var(--text-primary);
+        margin-right: 1rem;
+      }
+
+      .chat-input input[type="text"]::placeholder {
+        color: var(--text-secondary);
+      }
+
+      .chat-input button {
+        padding: 0.75rem 1.2rem;
+        background: var(--accent);
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <h2>Welcome to StudyHall</h2>
-            <form onsubmit="handleLogin(event)">
-                <input 
-                    type="text" 
-                    id="usernameInput" 
-                    placeholder="Enter your name"
-                    required
-                    autofocus
-                >
-                <button type="submit">Join Chat</button>
-            </form>
+  </head>
+  <body>
+    <!-- Authentication Modal -->
+    <div class="modal" id="authModal">
+      <div class="modal-content">
+        <!-- Login Section -->
+        <div id="loginSection" style="display: block">
+          <h3>Login</h3>
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <input
+              type="text"
+              id="loginUsernameInput"
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              id="loginPasswordInput"
+              placeholder="Password"
+              required
+            />
+            <button type="submit">Login</button>
+          </form>
+          <p>
+            Don't have an account? <a onclick="switchToRegister()">Register</a>
+          </p>
         </div>
+
+        <!-- Register Section -->
+        <div id="registerSection">
+          <h3>Register</h3>
+          <form id="registerForm" onsubmit="handleRegister(event)">
+            <input
+              type="text"
+              id="registerUsernameInput"
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              id="registerPasswordInput"
+              placeholder="Password"
+              required
+            />
+            <input
+              type="password"
+              id="registerConfirmPasswordInput"
+              placeholder="Confirm Password"
+              required
+            />
+            <input type="file" id="profilePicInput" accept="image/*" />
+            <button type="submit">Register</button>
+          </form>
+          <p>Already have an account? <a onclick="switchToLogin()">Login</a></p>
+        </div>
+      </div>
     </div>
 
+    <!-- Main Chat Interface -->
     <div class="chat-container">
-        <aside class="sidebar">
-            <h2>Channels</h2>
-            <div class="channels">
-                <div class="channel active" data-channel="1347720437819379753">📚 General</div>
-                <div class="channel" data-channel="1347720437819379755">💬 General 2</div>
-                <div class="channel" data-channel="1347720437819379754">🎮 Games</div>
-            </div>
-        </aside>
-        
-        <main class="chat-main">
-            <div class="messages" id="messages"></div>
-            <div class="chat-input">
-                <input 
-                    type="text" 
-                    id="messageInput"
-                    placeholder="Type your message..."
-                    disabled
-                >
-                <button onclick="sendMessage()" disabled>Send</button>
-            </div>
-        </main>
+      <aside class="sidebar">
+        <h2>Channels</h2>
+        <div class="channels">
+          <div class="channel active" data-channel="1347720437819379753">
+            📚 General
+          </div>
+          <div class="channel" data-channel="1347720437819379755">
+            💬 General 2
+          </div>
+          <div class="channel" data-channel="1347720437819379754">🎮 Games</div>
+        </div>
+      </aside>
+
+      <main class="chat-main">
+        <div class="messages" id="messages"></div>
+        <div class="chat-input">
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Type your message..."
+            disabled
+          />
+          <button onclick="sendMessage()" disabled>Send</button>
+        </div>
+      </main>
     </div>
 
     <script>
-        const API_BASE = "https://discord-chat-bot-6t2n.onrender.com";
-        let currentChannel = "1347720437819379753";
-        let username = localStorage.getItem("studyhall-username");
+      const API_BASE = "https://discord-chat-bot-6t2n.onrender.com";
+      let currentChannel = "1347720437819379753";
+      let username = localStorage.getItem("studyhall-username") || "";
 
-        async function handleLogin(event) {
-            event.preventDefault();
-            username = document.getElementById("usernameInput").value.trim();
-            
-            if (username) {
-                localStorage.setItem("studyhall-username", username);
-                document.getElementById("loginModal").style.display = "none";
-                document.getElementById("messageInput").disabled = false;
-                document.querySelector("button").disabled = false;
-                loadMessages();
-            }
+      // Switch to Registration Form
+      function switchToRegister() {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("registerSection").style.display = "block";
+      }
+
+      // Switch to Login Form
+      function switchToLogin() {
+        document.getElementById("registerSection").style.display = "none";
+        document.getElementById("loginSection").style.display = "block";
+      }
+
+      // Handle Login
+      async function handleLogin(event) {
+        event.preventDefault();
+        const user = document.getElementById("loginUsernameInput").value.trim();
+        const pass = document.getElementById("loginPasswordInput").value;
+        let accounts = JSON.parse(
+          localStorage.getItem("studyhall-accounts") || "{}"
+        );
+
+        if (!accounts[user]) {
+          alert("Account not found. Please register.");
+          return;
         }
-
-        async function loadMessages() {
-            try {
-                const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
-                const messages = await response.json();
-                renderMessages(messages);
-            } catch (error) {
-                console.error("Error loading messages:", error);
-                alert("Failed to load messages");
-            }
+        if (accounts[user].password !== pass) {
+          alert("Incorrect password.");
+          return;
         }
+        // Successful login
+        username = user;
+        localStorage.setItem("studyhall-username", username);
+        localStorage.setItem(
+          "studyhall-profilePic",
+          accounts[user].profilePic || ""
+        );
+        document.getElementById("authModal").style.display = "none";
+        document.getElementById("messageInput").disabled = false;
+        document.querySelector(".chat-input button").disabled = false;
+        loadMessages();
+      }
 
-        function renderMessages(messages) {
-            const container = document.getElementById("messages");
-            container.innerHTML = messages.map(msg => `
-                <div class="message">
-                    <img class="avatar" src="${msg.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}">
-                    <div class="message-content">
-                        <span class="message-author">${msg.username}</span>
-                        <span class="message-text">${msg.content}</span>
-                    </div>
-                </div>
-            `).join("");
-
-            // Scroll to bottom for new messages
-            container.scrollTop = container.scrollHeight;
+      // Handle Registration
+      async function handleRegister(event) {
+        event.preventDefault();
+        const user = document
+          .getElementById("registerUsernameInput")
+          .value.trim();
+        const pass = document.getElementById("registerPasswordInput").value;
+        const confirmPass = document.getElementById(
+          "registerConfirmPasswordInput"
+        ).value;
+        if (pass !== confirmPass) {
+          alert("Passwords do not match.");
+          return;
         }
-
-        async function sendMessage() {
-            const input = document.getElementById("messageInput");
-            const content = input.value.trim();
-            if (!content) return;
-
-            try {
-                const response = await fetch(`${API_BASE}/send`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        channelId: currentChannel,
-                        content: content,
-                        username: username
-                    })
-                });
-
-                input.value = "";
-                await loadMessages();
-                
-            } catch (error) {
-                console.error("Error sending message:", error);
-                alert("Failed to send message");
-            }
+        let accounts = JSON.parse(
+          localStorage.getItem("studyhall-accounts") || "{}"
+        );
+        if (accounts[user]) {
+          alert("This username is already taken. Please choose another one.");
+          return;
         }
+        // Process profile picture upload
+        const fileInput = document.getElementById("profilePicInput");
+        if (fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const profilePicData = e.target.result;
+            accounts[user] = { password: pass, profilePic: profilePicData };
+            localStorage.setItem(
+              "studyhall-accounts",
+              JSON.stringify(accounts)
+            );
+            completeRegistration(user, profilePicData);
+          };
+          reader.readAsDataURL(fileInput.files[0]);
+        } else {
+          // Use default avatar if no file is provided
+          const defaultPic = "https://cdn.discordapp.com/embed/avatars/1.png";
+          accounts[user] = { password: pass, profilePic: defaultPic };
+          localStorage.setItem("studyhall-accounts", JSON.stringify(accounts));
+          completeRegistration(user, defaultPic);
+        }
+      }
 
-        // Channel switching
-        document.querySelectorAll(".channel").forEach(channel => {
-            channel.addEventListener("click", function() {
-                currentChannel = this.dataset.channel;
-                document.querySelectorAll(".channel").forEach(c => c.classList.remove("active"));
-                this.classList.add("active");
-                loadMessages();
-            });
+      function completeRegistration(user, profilePic) {
+        username = user;
+        localStorage.setItem("studyhall-username", username);
+        localStorage.setItem("studyhall-profilePic", profilePic);
+        document.getElementById("authModal").style.display = "none";
+        document.getElementById("messageInput").disabled = false;
+        document.querySelector(".chat-input button").disabled = false;
+        loadMessages();
+      }
+
+      async function loadMessages() {
+        try {
+          const response = await fetch(
+            `${API_BASE}/messages/${currentChannel}`
+          );
+          const messages = await response.json();
+          renderMessages(messages);
+        } catch (error) {
+          console.error("Error loading messages:", error);
+          alert("Failed to load messages");
+        }
+      }
+
+      function renderMessages(messages) {
+        const container = document.getElementById("messages");
+        // Use the stored profile picture for current user's messages
+        const userProfilePic =
+          localStorage.getItem("studyhall-profilePic") ||
+          "https://cdn.discordapp.com/embed/avatars/1.png";
+        container.innerHTML = messages
+          .map(
+            (msg) => `
+        <div class="message ${msg.source === "web" ? "self" : ""}">
+          <img class="avatar" src="${
+            msg.source === "web" ? userProfilePic : msg.avatar
+          }" alt="Avatar">
+          <div class="message-content">
+            <div class="message-author">${msg.username}</div>
+            <div class="message-text">${msg.content}</div>
+          </div>
+        </div>
+      `
+          )
+          .join("");
+        container.scrollTop = container.scrollHeight;
+      }
+
+      async function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const content = input.value.trim();
+        if (!content) return;
+        try {
+          const response = await fetch(`${API_BASE}/send`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              channelId: currentChannel,
+              content: content,
+              username: username,
+            }),
+          });
+          input.value = "";
+          await loadMessages();
+        } catch (error) {
+          console.error("Error sending message:", error);
+          alert("Failed to send message");
+        }
+      }
+
+      // Channel switching
+      document.querySelectorAll(".channel").forEach((channel) => {
+        channel.addEventListener("click", function () {
+          currentChannel = this.dataset.channel;
+          document
+            .querySelectorAll(".channel")
+            .forEach((c) => c.classList.remove("active"));
+          this.classList.add("active");
+          loadMessages();
         });
+      });
 
-        // Initial setup
-        if (username) {
-            document.getElementById("loginModal").style.display = "none";
-            document.getElementById("messageInput").disabled = false;
-            document.querySelector("button").disabled = false;
-            loadMessages();
-        }
+      // Initial setup: If already logged in, bypass auth
+      if (username) {
+        document.getElementById("authModal").style.display = "none";
+        document.getElementById("messageInput").disabled = false;
+        document.querySelector(".chat-input button").disabled = false;
+        loadMessages();
+      }
 
-        // Message input handling
-        document.getElementById("messageInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
+      // Send message on Enter key (without Shift)
+      document
+        .getElementById("messageInput")
+        .addEventListener("keypress", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
         });
     </script>
-</body>
+  </body>
 </html>
