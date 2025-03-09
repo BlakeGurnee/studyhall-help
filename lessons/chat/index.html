@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord-Style Chat</title>
+    <title>Modern Discord-Style Chat</title>
     <style>
         :root {
             --bg-primary: #36393f;
             --bg-secondary: #2f3136;
             --bg-tertiary: #40444b;
-            --accent-primary: #5865f2;
             --text-primary: #ffffff;
             --text-secondary: #b9bbbe;
             --border-color: #202225;
-            --message-user: #5865f2;
-            --message-other: #2f3136;
+            --message-user: #2f3136;
+            --message-other: #40444b;
         }
 
         * {
@@ -75,7 +74,7 @@
 
         .modal-content input:focus {
             outline: none;
-            border-color: var(--accent-primary);
+            border-color: var(--text-primary);
         }
 
         /* Main Chat Layout */
@@ -116,8 +115,8 @@
         }
 
         .channel.active {
-            background: var(--accent-primary);
-            color: white;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
 
         /* Messages Area */
@@ -203,17 +202,17 @@
 
         button {
             padding: 0.75rem 1.5rem;
-            background: var(--accent-primary);
+            background: var(--bg-tertiary);
             border: none;
             border-radius: 8px;
-            color: white;
+            color: var(--text-primary);
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s;
         }
 
         button:hover {
-            background: #4752c4;
+            background: var(--bg-primary);
         }
 
         @keyframes messageIn {
