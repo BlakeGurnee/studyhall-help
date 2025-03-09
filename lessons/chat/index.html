@@ -15,13 +15,60 @@
 
         body {
             margin: 0;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Helvetica Neue', sans-serif;
             background: var(--background);
             color: var(--text);
             height: 100vh;
             display: flex;
         }
 
+        /* Login Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--secondary);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-content h2 {
+            margin: 0 0 1.5rem 0;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background: #40444b;
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Chat Styles */
         .chat-container {
             display: flex;
             width: 100%;
@@ -33,42 +80,6 @@
             background: var(--secondary);
             padding: 20px;
             border-right: 1px solid #36393f;
-        }
-
-        .sidebar h2 {
-            margin: 0 0 20px 0;
-            font-size: 1.2rem;
-            color: #b9bbbe;
-        }
-
-        .channels {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .channel {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #b9bbbe;
-        }
-
-        .channel:hover {
-            background: #3a3d42;
-        }
-
-        .channel.active {
-            background: #3a3d42;
-            color: #fff;
-        }
-
-        .chat-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
         }
 
         .messages {
@@ -86,12 +97,6 @@
             margin-bottom: 16px;
             background: var(--secondary);
             border-radius: 8px;
-            animation: messageAppear 0.3s ease;
-        }
-
-        @keyframes messageAppear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .avatar {
@@ -99,22 +104,6 @@
             height: 48px;
             border-radius: 50%;
             object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .message-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .message strong {
-            color: #fff;
-            margin-right: 8px;
-        }
-
-        .message p {
-            margin: 4px 0 0 0;
-            line-height: 1.4;
         }
 
         .chat-input {
@@ -125,20 +114,13 @@
             gap: 16px;
         }
 
-        input[type="text"] {
+        input {
             flex: 1;
             padding: 12px;
             border: 1px solid #40444b;
             border-radius: 8px;
             background: #40444b;
-            color: var(--text);
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary);
+            color: white;
         }
 
         button {
@@ -146,40 +128,30 @@
             background: var(--primary);
             border: none;
             border-radius: 8px;
-            color: var(--text);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button:hover {
-            background: #4752c4;
-        }
-
-        button:disabled {
-            background: #4f545c;
-            cursor: not-allowed;
-        }
-
-        .error-toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--error);
             color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            animation: slideUp 0.3s ease;
-            z-index: 1000;
-        }
-
-        @keyframes slideUp {
-            from { bottom: -50px; }
-            to { bottom: 20px; }
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Welcome to StudyHall</h2>
+            <form onsubmit="handleLogin(event)">
+                <input 
+                    type="text" 
+                    id="usernameInput" 
+                    placeholder="Enter your name"
+                    required
+                    autofocus
+                >
+                <button type="submit">Join Chat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
     <div class="chat-container">
         <aside class="sidebar">
             <h2>Channels</h2>
@@ -197,37 +169,58 @@
                     type="text" 
                     id="messageInput"
                     placeholder="Type your message..."
+                    disabled
                 >
-                <button onclick="sendMessage()">Send</button>
+                <button onclick="sendMessage()" disabled>Send</button>
             </div>
         </main>
     </div>
 
     <script>
-        const API_BASE = "https://discord-chat-bot-6t2n.onrender.com"; // UPDATE THIS
+        const API_BASE = "https://discord-chat-bot-6t2n.onrender.com";
         let currentChannel = "1347720437819379753";
-        let username = localStorage.getItem("studyhall-username") || prompt("Enter your username:");
+        let username = localStorage.getItem("studyhall-username");
+
+        // Login Handling
+        function handleLogin(event) {
+            event.preventDefault();
+            username = document.getElementById("usernameInput").value.trim();
+            if (username) {
+                localStorage.setItem("studyhall-username", username);
+                document.getElementById("loginModal").style.display = "none";
+                document.getElementById("messageInput").disabled = false;
+                document.querySelector("button").disabled = false;
+                fetchMessages();
+            }
+        }
+
+        // Initial Load
+        if (username) {
+            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("messageInput").disabled = false;
+            document.querySelector("button").disabled = false;
+            fetchMessages();
+        }
 
         async function fetchMessages() {
             try {
-                const res = await fetch(`${API_BASE}/messages/${currentChannel}`);
-                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
+                const messages = await response.json();
                 
-                const messages = await res.json();
                 document.getElementById("messages").innerHTML = messages
                     .map(msg => `
                         <div class="message">
                             <img class="avatar" 
                                 src="${msg.avatar}" 
                                 onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
-                            <div class="message-content">
+                            <div>
                                 <strong>${msg.username}</strong>
                                 <p>${msg.content}</p>
                             </div>
                         </div>
                     `).join("");
             } catch (error) {
-                showError(error.message);
+                console.error("Error:", error);
             }
         }
 
@@ -237,7 +230,7 @@
             if (!content) return;
 
             try {
-                const res = await fetch(`${API_BASE}/send`, {
+                await fetch(`${API_BASE}/send`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -246,15 +239,14 @@
                         username: username
                     })
                 });
-                
-                if (!res.ok) throw new Error("Failed to send message");
                 input.value = "";
                 fetchMessages();
             } catch (error) {
-                showError(error.message);
+                console.error("Error:", error);
             }
         }
 
+        // Channel Switching
         document.querySelectorAll(".channel").forEach(channel => {
             channel.addEventListener("click", function() {
                 currentChannel = this.dataset.channel;
@@ -264,29 +256,16 @@
             });
         });
 
-        if (!username) {
-            alert("Username is required!");
-            window.location.reload();
-        } else {
-            localStorage.setItem("studyhall-username", username);
-            fetchMessages();
-            setInterval(fetchMessages, 3000);
-            
-            document.getElementById("messageInput").addEventListener("keypress", e => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-        }
+        // Auto-refresh messages
+        setInterval(fetchMessages, 3000);
 
-        function showError(message) {
-            const toast = document.createElement("div");
-            toast.className = "error-toast";
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
+        // Enter key handler
+        document.getElementById("messageInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
     </script>
 </body>
 </html>
