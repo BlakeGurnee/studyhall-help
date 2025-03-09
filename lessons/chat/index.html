@@ -104,6 +104,11 @@
             animation: messageIn 0.3s ease;
             opacity: 0;
             animation-fill-mode: forwards;
+            position: relative;
+        }
+
+        .message:hover .delete-btn {
+            opacity: 1;
         }
 
         .message.self {
@@ -125,6 +130,7 @@
             border-radius: 12px;
             max-width: 800px;
             word-break: break-word;
+            position: relative;
         }
 
         .message.self .message-content {
@@ -146,6 +152,24 @@
         .message-time {
             color: var(--text-secondary);
             font-size: 0.75rem;
+        }
+
+        .delete-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: var(--text-primary);
+            border-radius: 4px;
+            padding: 4px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ed4245;
         }
 
         .chat-input {
@@ -172,6 +196,11 @@
             border-radius: 8px;
             color: white;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #4752c4;
         }
 
         @keyframes messageIn {
@@ -281,6 +310,9 @@
                     <img class="avatar" src="${msg.avatar}">
                 ` : ''}
                 <div class="message-content">
+                    ${msg.source === 'web' ? `
+                        <button class="delete-btn" onclick="deleteMessage('${msg.id}')">✕</button>
+                    ` : ''}
                     <div class="message-header">
                         <span class="message-author">${msg.username}</span>
                         <span class="message-time">
@@ -328,6 +360,20 @@
             } catch (error) {
                 console.error("Error sending message:", error);
                 alert("Failed to send message");
+            }
+        }
+
+        async function deleteMessage(messageId) {
+            try {
+                const response = await fetch(`${API_BASE}/messages/${currentChannel}/${messageId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete message');
+                await loadMessages();
+            } catch (error) {
+                console.error("Error deleting message:", error);
+                alert("Failed to delete message");
             }
         }
 
