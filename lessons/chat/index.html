@@ -6,13 +6,15 @@
     <title>StudyHall Chat</title>
     <style>
         :root {
-            --bg-primary: #0a0a0a;
+            --bg-primary: #0d0d0d;
             --bg-secondary: #1a1a1a;
-            --bg-tertiary: #2d2d2d;
+            --bg-tertiary: #262626;
             --accent-primary: #5865f2;
             --text-primary: #ffffff;
             --text-secondary: #b3b3b3;
             --border-color: #333333;
+            --message-user: #2b2d31;
+            --message-other: #383b40;
         }
 
         * {
@@ -55,6 +57,7 @@
         .modal-content h2 {
             margin-bottom: 1.5rem;
             font-weight: 600;
+            text-align: center;
         }
 
         .modal-content input {
@@ -86,6 +89,14 @@
             flex-direction: column;
         }
 
+        .sidebar h2 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
         .channels {
             flex: 1;
             margin-top: 1rem;
@@ -99,6 +110,9 @@
             color: var(--text-secondary);
             transition: all 0.2s;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .channel:hover {
@@ -132,11 +146,11 @@
             gap: 1rem;
             max-width: 75%;
             width: fit-content;
+            animation: messageIn 0.3s ease;
         }
 
         .message.self {
             align-self: flex-end;
-            flex-direction: row-reverse;
         }
 
         .avatar {
@@ -145,15 +159,17 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
+            margin-top: 4px;
         }
 
         .message-content {
-            background: var(--bg-secondary);
+            background: var(--message-other);
             padding: 1rem 1.25rem;
             border-radius: 12px;
             line-height: 1.4;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
+            max-width: 600px;
+            word-break: break-word;
         }
 
         .message.self .message-content {
@@ -165,6 +181,15 @@
             font-weight: 600;
             margin-bottom: 0.25rem;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 400;
         }
 
         .message-text {
@@ -180,6 +205,8 @@
             border-top: 1px solid var(--border-color);
             display: flex;
             gap: 1rem;
+            position: sticky;
+            bottom: 0;
         }
 
         input[type="text"] {
@@ -215,7 +242,6 @@
             transform: translateY(-1px);
         }
 
-        /* Animations */
         @keyframes messageIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -264,18 +290,13 @@
     </div>
 
     <script>
-        // REPLACE WITH YOUR SERVER URL
         const API_BASE = "https://discord-chat-bot-6t2n.onrender.com";
         let currentChannel = "1347720437819379753";
         let username = localStorage.getItem("studyhall-username");
 
-        // Debugging setup
-        console.log("Initial username:", username);
-        
         async function handleLogin(event) {
             event.preventDefault();
             username = document.getElementById("usernameInput").value.trim();
-            console.log("Logging in with username:", username);
             
             if (username) {
                 localStorage.setItem("studyhall-username", username);
@@ -287,27 +308,25 @@
         }
 
         async function loadMessages() {
-            console.log("Loading messages for channel:", currentChannel);
             try {
                 const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
-                console.log("Response status:", response.status);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
                 const messages = await response.json();
-                console.log("Received messages:", messages);
-                
                 const container = document.getElementById("messages");
-                container.innerHTML = messages.map(msg => `
+                
+                // Clear and reverse messages to show newest at bottom
+                container.innerHTML = messages.reverse().map(msg => `
                     <div class="message ${msg.origin === 'web' ? 'self' : ''}">
                         ${msg.origin !== 'web' ? `
                             <img class="avatar" src="${msg.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}">
                         ` : ''}
                         <div class="message-content">
-                            <strong>${msg.username}</strong>
-                            <p>${msg.content}</p>
+                            <div class="message-author">
+                                ${msg.username}
+                                <span class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                            <div class="message-text">${msg.content}</div>
                         </div>
                     </div>
                 `).join("");
@@ -322,8 +341,6 @@
         async function sendMessage() {
             const input = document.getElementById("messageInput");
             const content = input.value.trim();
-            console.log("Sending message:", content);
-            
             if (!content) return;
 
             try {
@@ -332,8 +349,11 @@
                 tempMsg.className = "message self";
                 tempMsg.innerHTML = `
                     <div class="message-content">
-                        <strong>You</strong>
-                        <p>${content}</p>
+                        <div class="message-author">
+                            You
+                            <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                        </div>
+                        <div class="message-text">${content}</div>
                     </div>
                 `;
                 document.getElementById("messages").appendChild(tempMsg);
@@ -350,13 +370,7 @@
                     })
                 });
 
-                console.log("Send response status:", response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                // Refresh messages after sending
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 await loadMessages();
                 
             } catch (error) {
@@ -369,7 +383,6 @@
         document.querySelectorAll(".channel").forEach(channel => {
             channel.addEventListener("click", function() {
                 currentChannel = this.dataset.channel;
-                console.log("Switching to channel:", currentChannel);
                 document.querySelectorAll(".channel").forEach(c => c.classList.remove("active"));
                 this.classList.add("active");
                 loadMessages();
@@ -378,7 +391,6 @@
 
         // Initial setup
         if (username) {
-            console.log("Existing user detected");
             document.getElementById("loginModal").style.display = "none";
             document.getElementById("messageInput").disabled = false;
             document.querySelector("button").disabled = false;
@@ -392,9 +404,6 @@
                 sendMessage();
             }
         });
-
-        // Initial message load
-        loadMessages();
     </script>
 </body>
 </html>
