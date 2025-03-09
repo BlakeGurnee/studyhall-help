@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>StudyHall Chat</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
             margin: 0;
         }
 
-        /* Modal styles */
+        /* Improved modal styling */
         .modal {
             display: none;
             position: fixed;
@@ -22,82 +22,91 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.8);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
 
         .modal-content {
             background: #2c2f33;
-            padding: 30px;
+            padding: 2rem;
             border-radius: 8px;
-            text-align: center;
-            min-width: 300px;
+            width: 90%;
+            max-width: 400px;
         }
 
         .modal-content h2 {
-            margin-bottom: 20px;
+            margin: 0 0 1.5rem;
+            color: #fff;
         }
 
         .modal-content input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
             background: #40444b;
-            border: none;
-            border-radius: 5px;
+            border: 1px solid #36393f;
+            border-radius: 4px;
             color: white;
+            font-size: 1rem;
         }
 
         .modal-content button {
+            width: 100%;
+            padding: 0.8rem;
             background: #5865f2;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
         }
 
         .modal-content button:hover {
             background: #4752c4;
         }
 
-        /* Chat styles */
+        /* Enhanced chat styling */
         .chat-container {
             display: flex;
             width: 100%;
+            height: 100%;
         }
 
         .sidebar {
-            width: 250px;
+            width: 240px;
             background: #2c2f33;
-            padding: 20px;
+            padding: 1rem;
+            border-right: 1px solid #202225;
         }
 
         .sidebar h2 {
-            margin-bottom: 15px;
-            font-size: 20px;
-            text-align: center;
+            font-size: 1.2rem;
             color: #fff;
+            margin: 0 0 1rem;
+            padding: 0.5rem;
+            text-align: center;
         }
 
         .sidebar ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
 
         .sidebar li {
-            padding: 12px;
+            padding: 0.8rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
+            transition: all 0.2s;
             color: #b9bbbe;
         }
 
-        .sidebar .active,
-        .sidebar li:hover {
+        .sidebar li:hover,
+        .sidebar li.active {
             background: #3a3d42;
             color: #fff;
         }
@@ -110,72 +119,89 @@
         }
 
         .chat-header {
-            padding: 15px;
+            padding: 1rem;
             background: #2f3136;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
+            border-bottom: 1px solid #202225;
+            font-weight: 600;
         }
 
         .messages {
             flex: 1;
-            padding: 15px;
+            padding: 1rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column-reverse;
         }
 
         .message {
-            padding: 10px;
-            border-radius: 8px;
-            background: #424549;
-            margin-bottom: 10px;
-            font-size: 14px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            background: #2f3136;
+            border-radius: 8px;
+            animation: messageAppear 0.3s ease;
         }
 
-        .message strong {
-            color: #ffffff;
-            margin-right: 10px;
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            margin-right: 10px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            object-fit: cover;
+        }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message strong {
+            color: #fff;
+            margin-right: 0.5rem;
         }
 
         .chat-input {
-            display: flex;
-            padding: 15px;
+            padding: 1rem;
             background: #2f3136;
+            border-top: 1px solid #202225;
+            display: flex;
+            gap: 0.8rem;
         }
 
         .chat-input input {
             flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
+            padding: 0.8rem;
             background: #40444b;
+            border: 1px solid #202225;
+            border-radius: 4px;
             color: white;
-            font-size: 14px;
+            font-size: 1rem;
         }
 
         .chat-input button {
-            padding: 10px;
-            margin-left: 10px;
+            padding: 0.8rem 1.5rem;
             background: #5865f2;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             color: white;
             cursor: pointer;
-            font-size: 14px;
+            transition: background 0.2s;
         }
 
         .chat-input button:hover {
             background: #4752c4;
+        }
+
+        .chat-input button:disabled {
+            background: #4f545c;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -183,12 +209,12 @@
     <!-- Sign-in Modal -->
     <div id="signin-modal" class="modal">
         <div class="modal-content">
-            <h2>Sign In</h2>
+            <h2>Welcome to StudyHall Chat</h2>
             <form onsubmit="handleSignIn(event)">
                 <input
                     type="text"
                     id="usernameInput"
-                    placeholder="Enter your name"
+                    placeholder="Enter your display name"
                     required
                     autofocus
                 />
@@ -197,27 +223,25 @@
         </div>
     </div>
 
-    <!-- Chat Container -->
+    <!-- Chat Interface -->
     <div class="chat-container">
         <aside class="sidebar">
-            <h2>Server</h2>
+            <h2>StudyHall Channels</h2>
             <nav>
                 <ul>
-                    <li
-                        class="active"
-                        onclick="changeChannel('1347720437819379753', this)"
-                    >
-                        General
+                    <li class="active" onclick="changeChannel('1347720437819379753', this)">
+                        📚 General
                     </li>
                     <li onclick="changeChannel('1347720437819379755', this)">
-                        General2
+                        💬 General 2
                     </li>
                     <li onclick="changeChannel('1347720437819379754', this)">
-                        Game Requests
+                        🎮 Game Requests
                     </li>
                 </ul>
             </nav>
         </aside>
+        
         <main class="chat-window">
             <header class="chat-header" id="chat-title">General</header>
             <div class="messages" id="messages"></div>
@@ -225,7 +249,7 @@
                 <input
                     type="text"
                     id="messageInput"
-                    placeholder="Type a message..."
+                    placeholder="Type your message..."
                     onkeydown="handleKeyPress(event)"
                     disabled
                 />
@@ -235,66 +259,68 @@
     </div>
 
     <script>
-        // ========== CONFIGURATION ========== //
-        const apiBaseUrl = "https://discord-chat-bot-6t2n.onrender.com"; // REPLACE WITH YOUR RENDER URL
+        // Configuration
+        const apiBaseUrl = "https://your-render-service.onrender.com"; // UPDATE THIS
         let currentChannelId = "1347720437819379753";
-        // =================================== //
 
-        // Sign-in Handling
+        // Auth Handling
         function handleSignIn(event) {
             event.preventDefault();
-            const username = document.getElementById("usernameInput").value.trim();
+            const usernameInput = document.getElementById("usernameInput");
+            const username = usernameInput.value.trim();
+            
             if (username) {
-                localStorage.setItem("username", username);
+                localStorage.setItem("studyhall-username", username);
                 document.getElementById("signin-modal").style.display = "none";
-                document.getElementById("messageInput").disabled = false;
-                document.querySelector(".chat-input button").disabled = false;
-                document.getElementById("messageInput").focus();
+                enableChatInterface();
+                usernameInput.value = "";
             }
         }
 
-        // Check existing user
-        document.addEventListener("DOMContentLoaded", () => {
-            const username = localStorage.getItem("username");
-            const modal = document.getElementById("signin-modal");
-            
-            if (!username) {
-                modal.style.display = "flex";
-            } else {
-                modal.style.display = "none";
-                document.getElementById("messageInput").disabled = false;
-                document.querySelector(".chat-input button").disabled = false;
-            }
-        });
+        function enableChatInterface() {
+            const input = document.getElementById("messageInput");
+            const button = document.querySelector(".chat-input button");
+            input.disabled = false;
+            button.disabled = false;
+            input.focus();
+        }
 
-        // Chat Functions
+        // Message Handling
         async function fetchMessages() {
             try {
-                const res = await fetch(`${apiBaseUrl}/messages/${currentChannelId}`);
-                const messages = await res.json();
+                const response = await fetch(`${apiBaseUrl}/messages/${currentChannelId}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const messages = await response.json();
                 const chatbox = document.getElementById("messages");
-
-                chatbox.innerHTML = messages
-                    .map(msg => `
-                        <div class="message">
-                            <img class="avatar" src="${msg.avatar}" />
-                            <strong>${msg.username || "Anonymous"}:</strong> ${msg.content}
+                
+                chatbox.innerHTML = messages.map(msg => `
+                    <div class="message">
+                        <img class="avatar" 
+                             src="${msg.avatar}" 
+                             alt="${msg.username}'s avatar"
+                             onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                        <div class="message-content">
+                            <strong>${msg.username}</strong>
+                            <span>${msg.content}</span>
                         </div>
-                    `)
-                    .join("");
+                    </div>
+                `).join("");
+                
             } catch (error) {
-                console.error("Error fetching messages:", error);
+                console.error("Message fetch error:", error);
+                showError("Failed to load messages. Try refreshing.");
             }
         }
 
         async function sendMessage() {
-            const content = document.getElementById("messageInput").value.trim();
+            const input = document.getElementById("messageInput");
+            const content = input.value.trim();
             if (!content) return;
 
-            const username = localStorage.getItem("username");
-
             try {
-                await fetch(`${apiBaseUrl}/send`, {
+                const username = localStorage.getItem("studyhall-username");
+                const response = await fetch(`${apiBaseUrl}/send`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -303,30 +329,58 @@
                         username: username
                     })
                 });
-                document.getElementById("messageInput").value = "";
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                input.value = "";
                 fetchMessages();
+                
             } catch (error) {
-                console.error("Error sending message:", error);
+                console.error("Message send error:", error);
+                showError("Failed to send message. Check connection.");
             }
         }
 
         function handleKeyPress(event) {
-            if (event.key === "Enter") {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
                 sendMessage();
             }
         }
 
+        // Channel Management
         function changeChannel(channelId, element) {
             currentChannelId = channelId;
-            document.getElementById("chat-title").innerText = element.innerText;
+            document.getElementById("chat-title").textContent = element.textContent.trim();
             document.querySelectorAll(".sidebar li").forEach(li => li.classList.remove("active"));
             element.classList.add("active");
             fetchMessages();
         }
 
-        // Initialize
-        setInterval(fetchMessages, 5000);
-        fetchMessages();
+        // Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedUsername = localStorage.getItem("studyhall-username");
+            const modal = document.getElementById("signin-modal");
+            
+            if (!savedUsername) {
+                modal.style.display = "flex";
+            } else {
+                enableChatInterface();
+            }
+
+            // Initial fetch
+            fetchMessages();
+            setInterval(fetchMessages, 3000);
+        });
+
+        // Error Handling
+        function showError(message) {
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "error-message";
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 3000);
+        }
     </script>
 </body>
 </html>
