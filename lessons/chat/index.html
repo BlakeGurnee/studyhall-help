@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Discord-Style Chat</title>
-    <style>
+   <style>
         :root {
             --bg-primary: #36393f;
             --bg-secondary: #2f3136;
             --bg-tertiary: #40444b;
-            --text-primary: #ffffff;
+            --text-primary: #dcddde;
             --text-secondary: #b9bbbe;
             --border-color: #202225;
-            --message-user: #2f3136;
-            --message-other: #40444b;
         }
 
         * {
@@ -47,37 +45,11 @@
         .modal-content {
             background: var(--bg-secondary);
             padding: 2rem;
-            border-radius: 12px;
+            border-radius: 8px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
-        .modal-content h2 {
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-
-        .modal-content input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-        }
-
-        /* Main Chat Layout */
         .chat-container {
             display: flex;
             width: 100%;
@@ -88,34 +60,19 @@
         .sidebar {
             width: 240px;
             background: var(--bg-secondary);
-            padding: 1.5rem;
+            padding: 1rem;
             border-right: 1px solid var(--border-color);
         }
 
-        .sidebar h2 {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 1rem;
-        }
-
         .channel {
-            padding: 0.75rem 1rem;
+            padding: 0.5rem;
             margin: 0.25rem 0;
-            border-radius: 6px;
             cursor: pointer;
             color: var(--text-secondary);
             transition: all 0.2s;
         }
 
-        .channel:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
         .channel.active {
-            background: var(--bg-tertiary);
             color: var(--text-primary);
         }
 
@@ -128,57 +85,45 @@
 
         .messages {
             flex: 1;
-            padding: 1.5rem;
+            padding: 1rem;
             overflow-y: auto;
             display: flex;
-            flex-direction: column-reverse; /* Messages start at the bottom */
-            gap: 1rem;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         .message {
             display: flex;
-            gap: 1rem;
-            max-width: 75%;
-            width: fit-content;
+            align-items: flex-start;
+            gap: 0.75rem;
+            width: 100%;
             animation: messageIn 0.3s ease;
         }
 
-        .message.self {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
         }
 
         .message-content {
-            background: var(--message-other);
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            line-height: 1.4;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .message.self .message-content {
-            background: var(--message-user);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
 
         .message-author {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+            font-weight: 500;
             color: var(--text-primary);
+            font-size: 0.9rem;
         }
 
         .message-text {
             color: var(--text-primary);
             font-size: 0.95rem;
-            line-height: 1.5;
+            word-break: break-word;
         }
 
         /* Input Area */
@@ -192,27 +137,11 @@
 
         input[type="text"] {
             flex: 1;
-            padding: 0.75rem 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-
-        button {
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem;
             background: var(--bg-tertiary);
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             color: var(--text-primary);
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        button:hover {
-            background: var(--bg-primary);
         }
 
         @keyframes messageIn {
@@ -294,18 +223,16 @@
         function renderMessages(messages) {
             const container = document.getElementById("messages");
             container.innerHTML = messages.map(msg => `
-                <div class="message ${msg.source === 'web' ? 'self' : ''}">
-                    ${msg.source !== 'web' ? `
-                        <img class="avatar" src="${msg.avatar}">
-                    ` : ''}
+                <div class="message">
+                    <img class="avatar" src="${msg.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}">
                     <div class="message-content">
-                        <div class="message-author">${msg.username}</div>
-                        <div class="message-text">${msg.content}</div>
+                        <span class="message-author">${msg.username}</span>
+                        <span class="message-text">${msg.content}</span>
                     </div>
                 </div>
             `).join("");
-            
-            // Scroll to the bottom (newest messages)
+
+            // Scroll to bottom for new messages
             container.scrollTop = container.scrollHeight;
         }
 
