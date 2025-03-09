@@ -258,31 +258,37 @@
       document.getElementById("loginSection").style.display = "block";
     }
     
-    // Handle Login
+    // Handle Login using the /login endpoint
     async function handleLogin(event) {
       event.preventDefault();
       const user = document.getElementById("loginUsernameInput").value.trim();
       const pass = document.getElementById("loginPasswordInput").value;
-      let accounts = JSON.parse(localStorage.getItem("studyhall-accounts") || "{}");
-      if (!accounts[user]) {
-        alert("Account not found. Please register.");
-        return;
+      try {
+        const res = await fetch(`${API_BASE}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: user, password: pass })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          username = data.username;
+          localStorage.setItem("studyhall-username", username);
+          localStorage.setItem("studyhall-profilePic", data.profilePic || "");
+          localStorage.setItem("studyhall-nickname", data.nickname || "");
+          document.getElementById("authModal").style.display = "none";
+          document.getElementById("messageInput").disabled = false;
+          document.querySelector(".chat-input button").disabled = false;
+          loadMessages();
+        } else {
+          alert(data.error);
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Login failed");
       }
-      if (accounts[user].password !== pass) {
-        alert("Incorrect password.");
-        return;
-      }
-      username = user;
-      localStorage.setItem("studyhall-username", username);
-      localStorage.setItem("studyhall-profilePic", accounts[user].profilePic || "");
-      localStorage.setItem("studyhall-nickname", accounts[user].nickname || "");
-      document.getElementById("authModal").style.display = "none";
-      document.getElementById("messageInput").disabled = false;
-      document.querySelector(".chat-input button").disabled = false;
-      loadMessages();
     }
     
-    // Handle Registration
+    // Handle Registration using the /register endpoint
     async function handleRegister(event) {
       event.preventDefault();
       const user = document.getElementById("registerUsernameInput").value.trim();
@@ -292,26 +298,33 @@
         alert("Passwords do not match.");
         return;
       }
-      let accounts = JSON.parse(localStorage.getItem("studyhall-accounts") || "{}");
-      if (accounts[user]) {
-        alert("This username is already taken. Please choose another one.");
-        return;
-      }
-      const fileInput = document.getElementById("profilePicInput");
-      if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          const profilePicData = e.target.result;
-          accounts[user] = { password: pass, profilePic: profilePicData, nickname: "" };
-          localStorage.setItem("studyhall-accounts", JSON.stringify(accounts));
+      try {
+        const fileInput = document.getElementById("profilePicInput");
+        let profilePicData = "";
+        if (fileInput.files && fileInput.files[0]) {
+          profilePicData = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (err) => reject(err);
+            reader.readAsDataURL(fileInput.files[0]);
+          });
+        } else {
+          profilePicData = 'https://cdn.discordapp.com/embed/avatars/1.png';
+        }
+        const res = await fetch(`${API_BASE}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: user, password: pass, profilePic: profilePicData })
+        });
+        const data = await res.json();
+        if (res.ok) {
           completeRegistration(user, profilePicData);
-        };
-        reader.readAsDataURL(fileInput.files[0]);
-      } else {
-        const defaultPic = 'https://cdn.discordapp.com/embed/avatars/1.png';
-        accounts[user] = { password: pass, profilePic: defaultPic, nickname: "" };
-        localStorage.setItem("studyhall-accounts", JSON.stringify(accounts));
-        completeRegistration(user, defaultPic);
+        } else {
+          alert(data.error);
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        alert("Registration failed");
       }
     }
     function completeRegistration(user, profilePic) {
@@ -337,17 +350,21 @@
     
     function renderMessages(messages) {
       const container = document.getElementById("messages");
-      const userProfilePic = localStorage.getItem("studyhall-profilePic") || 'https://cdn.discordapp.com/embed/avatars/1.png';
-      const displayName = localStorage.getItem("studyhall-nickname") || username;
-      container.innerHTML = messages.map(msg => `
-        <div class="message">
-          <img class="avatar" src="${msg.source === 'web' ? userProfilePic : msg.avatar}" alt="Avatar">
-          <div class="message-content">
-            <div class="message-author">${msg.source === 'web' ? displayName : msg.username}</div>
-            <div class="message-text">${msg.content}</div>
+      const currentUser = localStorage.getItem("studyhall-username");
+      const currentProfilePic = localStorage.getItem("studyhall-profilePic") || 'https://cdn.discordapp.com/embed/avatars/1.png';
+      const currentDisplayName = localStorage.getItem("studyhall-nickname") || currentUser;
+      container.innerHTML = messages.map(msg => {
+        const isMine = msg.username === currentUser;
+        return `
+          <div class="message">
+            <img class="avatar" src="${msg.avatar}" alt="Avatar">
+            <div class="message-content">
+              <div class="message-author">${isMine ? currentDisplayName : msg.username}</div>
+              <div class="message-text">${msg.content}</div>
+            </div>
           </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
       container.scrollTop = container.scrollHeight;
     }
     
@@ -384,15 +401,14 @@
       let newProfilePic = "";
       let newNickname = document.getElementById("newNicknameInput").value.trim();
       if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          newProfilePic = e.target.result;
-          await sendProfileUpdate(newUsername, newPassword, newProfilePic, newNickname);
-        };
-        reader.readAsDataURL(fileInput.files[0]);
-      } else {
-        await sendProfileUpdate(newUsername, newPassword, newProfilePic, newNickname);
+        newProfilePic = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = (err) => reject(err);
+          reader.readAsDataURL(fileInput.files[0]);
+        });
       }
+      await sendProfileUpdate(newUsername, newPassword, newProfilePic, newNickname);
     }
     
     async function sendProfileUpdate(newUsername, newPassword, newProfilePic, newNickname) {
