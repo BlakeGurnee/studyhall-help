@@ -41,36 +41,27 @@
 
         .modal-content {
             background: var(--secondary);
-            padding: 2.5rem;
-            border-radius: 12px;
+            padding: 2rem;
+            border-radius: 8px;
             width: 90%;
-            max-width: 420px;
-            box-shadow: 0 12px 48px rgba(0,0,0,0.32);
-            animation: scaleUp 0.3s ease;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
         .modal-content h2 {
             margin: 0 0 1.5rem;
             font-size: 1.5rem;
-            font-weight: 600;
         }
 
         .modal-content input {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 1.5rem;
+            padding: 12px;
+            margin-bottom: 1rem;
             background: var(--tertiary);
-            border: 2px solid var(--secondary);
-            border-radius: 8px;
+            border: 1px solid #202225;
+            border-radius: 4px;
             color: white;
             font-size: 1rem;
-            transition: all 0.2s;
-        }
-
-        .modal-content input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
         }
 
         .chat-container {
@@ -82,40 +73,16 @@
         .sidebar {
             width: 240px;
             background: var(--secondary);
-            padding: 20px;
+            padding: 16px;
             border-right: 1px solid #202225;
-            flex-shrink: 0;
-        }
-
-        .sidebar h2 {
-            font-size: 1rem;
-            color: #8e9297;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0 0 1rem;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #202225;
-        }
-
-        .channels {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
         }
 
         .channel {
-            padding: 10px 12px;
-            margin: 2px 0;
-            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
             cursor: pointer;
             color: #8e9297;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .channel:hover {
-            background: var(--hover);
-            color: #dcddde;
         }
 
         .channel.active {
@@ -127,38 +94,28 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100vh;
         }
 
         .messages {
             flex: 1;
+            padding: 20px;
             overflow-y: auto;
-            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .message {
             display: flex;
-            gap: 16px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            animation: messageAppear 0.3s ease;
-            background: var(--secondary);
-            border: 1px solid rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            gap: 12px;
+            align-items: start;
+            max-width: 80%;
+            animation: messageAppear 0.2s ease;
         }
 
-        .message[data-origin="web"] {
+        .message.self {
+            align-self: flex-end;
             flex-direction: row-reverse;
-            text-align: right;
-            background: none;
-            border: none;
-        }
-
-        .message:hover {
-            transform: translateX(4px);
         }
 
         .avatar {
@@ -167,57 +124,41 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
-            border: 2px solid var(--tertiary);
         }
 
-        .message-content {
-            background: var(--primary);
-            color: white;
+        .message-bubble {
+            background: var(--secondary);
             padding: 12px 16px;
-            border-radius: 8px;
-            max-width: 80%;
+            border-radius: 18px;
+            line-height: 1.4;
             word-break: break-word;
         }
 
-        .message strong {
-            color: #fff;
-            font-size: 0.95rem;
-            margin-bottom: 4px;
-            display: block;
+        .message.self .message-bubble {
+            background: var(--primary);
         }
 
-        .message p {
-            margin: 0;
-            color: #dcddde;
-            line-height: 1.4;
-            font-size: 0.95rem;
+        .message-author {
+            font-weight: 500;
+            margin-bottom: 4px;
         }
 
         .chat-input {
-            padding: 20px 24px;
+            padding: 16px;
             background: var(--secondary);
             border-top: 1px solid #202225;
             display: flex;
-            gap: 16px;
-            position: sticky;
-            bottom: 0;
+            gap: 12px;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 12px 18px;
+            padding: 12px;
             background: var(--tertiary);
-            border: 2px solid var(--secondary);
+            border: none;
             border-radius: 8px;
             color: white;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
+            font-size: 1rem;
         }
 
         button {
@@ -227,28 +168,11 @@
             border-radius: 8px;
             color: white;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        button:hover {
-            background: #4752c4;
-            transform: translateY(-1px);
         }
 
         @keyframes messageAppear {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleUp {
-            from { transform: scale(0.95); }
-            to { transform: scale(1); }
         }
     </style>
 </head>
@@ -273,9 +197,9 @@
         <aside class="sidebar">
             <h2>Channels</h2>
             <div class="channels">
-                <div class="channel active" data-channel="1347720437819379753">📚 General</div>
-                <div class="channel" data-channel="1347720437819379755">💬 General 2</div>
-                <div class="channel" data-channel="1347720437819379754">🎮 Games</div>
+                <div class="channel active" data-channel="general">📚 General</div>
+                <div class="channel" data-channel="general2">💬 General 2</div>
+                <div class="channel" data-channel="games">🎮 Games</div>
             </div>
         </aside>
         
@@ -295,7 +219,7 @@
 
     <script>
         const API_BASE = "https://discord-chat-bot-6t2n.onrender.com";
-        let currentChannel = "1347720437819379753";
+        let currentChannel = "general";
         let username = localStorage.getItem("studyhall-username");
 
         function handleLogin(event) {
@@ -306,38 +230,31 @@
                 document.getElementById("loginModal").style.display = "none";
                 document.getElementById("messageInput").disabled = false;
                 document.querySelector("button").disabled = false;
-                fetchMessages();
+                loadMessages();
             }
         }
 
-        async function fetchMessages() {
+        async function loadMessages() {
             try {
                 const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
                 const messages = await response.json();
                 const container = document.getElementById("messages");
                 
                 container.innerHTML = messages.map(msg => `
-                    <div class="message" data-origin="${msg.origin}">
-                        ${msg.origin === 'web' ? `
-                            <div class="message-content">
-                                <strong>You</strong>
-                                <p>${msg.content}</p>
-                            </div>
-                        ` : `
-                            <img class="avatar" 
-                                src="${msg.avatar}" 
-                                onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
-                            <div>
-                                <strong>${msg.username}</strong>
-                                <p>${msg.content.replace(/\*\*(.*?)\*\*/g, '$1')}</p>
-                            </div>
-                        `}
+                    <div class="message ${msg.origin === 'web' ? 'self' : ''}">
+                        ${msg.origin !== 'web' ? `
+                            <img class="avatar" src="${msg.avatar}">
+                        ` : ''}
+                        <div class="message-bubble">
+                            <div class="message-author">${msg.username}</div>
+                            <div>${msg.content}</div>
+                        </div>
                     </div>
                 `).join("");
                 
                 container.scrollTop = container.scrollHeight;
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error loading messages:", error);
             }
         }
 
@@ -346,22 +263,21 @@
             const content = input.value.trim();
             if (!content) return;
 
-            // Optimistic update
-            const tempMsg = document.createElement("div");
-            tempMsg.className = "message";
-            tempMsg.setAttribute("data-origin", "web");
-            tempMsg.innerHTML = `
-                <div class="message-content">
-                    <strong>You</strong>
-                    <p>${content}</p>
-                </div>
-            `;
-            document.getElementById("messages").appendChild(tempMsg);
-            input.value = "";
-            document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-
             try {
-                const response = await fetch(`${API_BASE}/send`, {
+                // Optimistic update
+                const tempMsg = document.createElement("div");
+                tempMsg.className = "message self";
+                tempMsg.innerHTML = `
+                    <div class="message-bubble">
+                        <div class="message-author">You</div>
+                        <div>${content}</div>
+                    </div>
+                `;
+                document.getElementById("messages").appendChild(tempMsg);
+                input.value = "";
+                document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+
+                await fetch(`${API_BASE}/send`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -370,34 +286,36 @@
                         username: username
                     })
                 });
-                
-                if (!response.ok) throw new Error("Failed to send");
-                await fetchMessages();
-            } catch (error) {
-                console.error("Error:", error);
+
+                // Replace optimistic update with real message
                 tempMsg.remove();
+                await loadMessages();
+                
+            } catch (error) {
+                console.error("Error sending message:", error);
                 alert("Failed to send message");
             }
         }
 
+        // Channel switching and other event listeners
         document.querySelectorAll(".channel").forEach(channel => {
             channel.addEventListener("click", function() {
                 currentChannel = this.dataset.channel;
                 document.querySelectorAll(".channel").forEach(c => c.classList.remove("active"));
                 this.classList.add("active");
-                fetchMessages();
+                loadMessages();
             });
         });
 
+        // Initial setup
         if (username) {
             document.getElementById("loginModal").style.display = "none";
             document.getElementById("messageInput").disabled = false;
             document.querySelector("button").disabled = false;
-            fetchMessages();
+            loadMessages();
         }
 
-        setInterval(fetchMessages, 3000);
-
+        // Message input handling
         document.getElementById("messageInput").addEventListener("keypress", (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
