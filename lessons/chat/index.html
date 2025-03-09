@@ -6,42 +6,21 @@
     <title>StudyHall Chat</title>
     <style>
         :root {
-            --background: #1a1a1a;
+            --background: #1e1e1e;
             --primary: #5865f2;
             --text: #ffffff;
             --secondary: #2c2f33;
-            --error: #ed4245;
         }
 
         body {
             margin: 0;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Helvetica Neue', sans-serif;
             background: var(--background);
             color: var(--text);
             height: 100vh;
             display: flex;
         }
 
-        /* Error Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--error);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            animation: slideUp 0.3s ease;
-            z-index: 1000;
-        }
-
-        @keyframes slideUp {
-            from { bottom: -50px; }
-            to { bottom: 20px; }
-        }
-
-        /* Chat Layout */
         .chat-container {
             display: flex;
             width: 100%;
@@ -55,30 +34,6 @@
             border-right: 1px solid #36393f;
         }
 
-        .channel-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .channel {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .channel.active {
-            background: #3a3d42;
-        }
-
-        .chat-window {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
         .messages {
             flex: 1;
             padding: 20px;
@@ -89,15 +44,15 @@
 
         .message {
             display: flex;
-            gap: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
             background: var(--secondary);
             border-radius: 8px;
-            animation: messageAppear 0.3s ease;
+            animation: fadeIn 0.3s ease;
         }
 
-        @keyframes messageAppear {
+        @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
@@ -114,10 +69,10 @@
             background: var(--secondary);
             border-top: 1px solid #36393f;
             display: flex;
-            gap: 16px;
+            gap: 15px;
         }
 
-        input[type="text"] {
+        input {
             flex: 1;
             padding: 12px;
             border: 1px solid #40444b;
@@ -145,109 +100,90 @@
 <body>
     <div class="chat-container">
         <aside class="sidebar">
-            <h2>StudyHall Channels</h2>
-            <ul class="channel-list">
-                <li class="channel active" data-channel="general">📚 General Chat</li>
-                <li class="channel" data-channel="help">❓ Study Help</li>
-                <li class="channel" data-channel="games">🎮 Game Night</li>
-            </ul>
+            <h2>Channels</h2>
+            <div class="channels">
+                <div class="channel active" data-channel="1347720437819379753">📚 General</div>
+                <div class="channel" data-channel="1347720437819379755">💬 General 2</div>
+                <div class="channel" data-channel="1347720437819379754">🎮 Games</div>
+            </div>
         </aside>
         
-        <main class="chat-window">
+        <main class="chat-main">
             <div class="messages" id="messages"></div>
             <div class="chat-input">
                 <input 
                     type="text" 
                     id="messageInput"
                     placeholder="Type your message..."
-                    disabled
                 >
-                <button id="sendButton" disabled>Send</button>
+                <button onclick="sendMessage()">Send</button>
             </div>
         </main>
     </div>
 
     <script>
-        const API_URL = "https://your-render-service.onrender.com"; // UPDATE THIS
-        const CHANNEL_IDS = {
-            general: "1347720437819379753",
-            help: "1347720437819379754",
-            games: "1347720437819379755"
-        };
+        const API_BASE = "https://your-render-service.onrender.com";
+        let currentChannel = "1347720437819379753";
 
-        let currentChannel = "general";
+        // Auth handling
         let username = localStorage.getItem("studyhall-username");
-
-        // Auth flow
         if (!username) {
             username = prompt("Welcome to StudyHall!\nPlease enter your display name:");
             if (username) {
                 localStorage.setItem("studyhall-username", username.trim());
             } else {
-                alert("You must enter a name to continue.");
+                alert("Username is required to participate.");
                 window.location.reload();
             }
         }
 
-        // UI Elements
-        const messageInput = document.getElementById("messageInput");
-        const sendButton = document.getElementById("sendButton");
-        messageInput.disabled = false;
-        sendButton.disabled = false;
-
         // Message handling
         async function fetchMessages() {
             try {
-                const response = await fetch(`${API_URL}/messages/${CHANNEL_IDS[currentChannel]}`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
+                const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
                 const messages = await response.json();
-                renderMessages(messages);
+                
+                const messagesContainer = document.getElementById("messages");
+                messagesContainer.innerHTML = messages.map(msg => `
+                    <div class="message">
+                        <img class="avatar" 
+                             src="${msg.avatar}" 
+                             alt="${msg.username}"
+                             onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                        <div>
+                            <strong>${msg.username}</strong>
+                            <p>${msg.content}</p>
+                        </div>
+                    </div>
+                `).join("");
             } catch (error) {
-                showError(`Failed to load messages: ${error.message}`);
+                console.error("Fetch error:", error);
             }
         }
 
-        function renderMessages(messages) {
-            const container = document.getElementById("messages");
-            container.innerHTML = messages.map(msg => `
-                <div class="message">
-                    <img class="avatar" 
-                         src="${msg.avatar}" 
-                         alt="${msg.username}" 
-                         onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
-                    <div>
-                        <strong>${msg.username}</strong>
-                        <p>${msg.content}</p>
-                    </div>
-                </div>
-            `).join("");
-        }
-
         async function sendMessage() {
-            const content = messageInput.value.trim();
+            const input = document.getElementById("messageInput");
+            const content = input.value.trim();
             if (!content) return;
 
             try {
-                const response = await fetch(`${API_URL}/send`, {
+                await fetch(`${API_BASE}/send`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": "Bearer studyhall"
                     },
                     body: JSON.stringify({
-                        channelId: CHANNEL_IDS[currentChannel],
+                        channelId: currentChannel,
                         content: content,
                         username: username
                     })
                 });
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
-                messageInput.value = "";
+                input.value = "";
                 fetchMessages();
             } catch (error) {
-                showError(`Failed to send message: ${error.message}`);
+                console.error("Send error:", error);
             }
         }
 
@@ -261,28 +197,17 @@
             });
         });
 
-        // Event listeners
-        messageInput.addEventListener("keypress", (e) => {
+        // Initial load
+        fetchMessages();
+        setInterval(fetchMessages, 3000);
+
+        // Enter key handler
+        document.getElementById("messageInput").addEventListener("keypress", (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
         });
-
-        sendButton.addEventListener("click", sendMessage);
-
-        // Initial load
-        fetchMessages();
-        setInterval(fetchMessages, 3000);
-
-        // Error handling
-        function showError(message) {
-            const toast = document.createElement("div");
-            toast.className = "toast";
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
     </script>
 </body>
 </html>
