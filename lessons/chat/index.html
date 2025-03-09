@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord-Style Chat</title>
+    <title>Modern Discord-Style Chat</title>
     <style>
         :root {
             --bg-primary: #36393f;
             --bg-secondary: #2f3136;
             --bg-tertiary: #40444b;
             --accent-primary: #5865f2;
-            --text-primary: #dcddde;
+            --text-primary: #ffffff;
             --text-secondary: #b9bbbe;
             --border-color: #202225;
+            --message-user: #5865f2;
+            --message-other: #2f3136;
         }
 
         * {
@@ -22,13 +24,14 @@
         }
 
         body {
-            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             height: 100vh;
             display: flex;
         }
 
+        /* Login Modal */
         .modal {
             position: fixed;
             top: 0;
@@ -45,36 +48,70 @@
         .modal-content {
             background: var(--bg-secondary);
             padding: 2rem;
-            border-radius: 8px;
+            border-radius: 12px;
             width: 90%;
             max-width: 400px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
+        .modal-content h2 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        /* Main Chat Layout */
         .chat-container {
             display: flex;
             width: 100%;
             height: 100vh;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 240px;
             background: var(--bg-secondary);
-            padding: 16px;
+            padding: 1.5rem;
             border-right: 1px solid var(--border-color);
         }
 
+        .sidebar h2 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
         .channel {
-            padding: 10px 12px;
-            margin: 4px 0;
-            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 6px;
             cursor: pointer;
             color: var(--text-secondary);
             transition: all 0.2s;
         }
 
         .channel:hover {
-            background: rgba(79,84,92,0.4);
+            background: var(--bg-tertiary);
             color: var(--text-primary);
         }
 
@@ -83,6 +120,7 @@
             color: white;
         }
 
+        /* Messages Area */
         .chat-main {
             flex: 1;
             display: flex;
@@ -91,24 +129,19 @@
 
         .messages {
             flex: 1;
-            padding: 20px;
+            padding: 1.5rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 1rem;
         }
 
         .message {
             display: flex;
-            gap: 16px;
+            gap: 1rem;
+            max-width: 75%;
+            width: fit-content;
             animation: messageIn 0.3s ease;
-            opacity: 0;
-            animation-fill-mode: forwards;
-            position: relative;
-        }
-
-        .message:hover .delete-btn {
-            opacity: 1;
         }
 
         .message.self {
@@ -125,78 +158,58 @@
         }
 
         .message-content {
-            background: var(--bg-secondary);
-            padding: 12px 16px;
+            background: var(--message-other);
+            padding: 1rem 1.25rem;
             border-radius: 12px;
-            max-width: 800px;
-            word-break: break-word;
-            position: relative;
+            line-height: 1.4;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .message.self .message-content {
-            background: var(--accent-primary);
-        }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 4px;
+            background: var(--message-user);
         }
 
         .message-author {
+            font-size: 0.875rem;
             font-weight: 600;
+            margin-bottom: 0.25rem;
             color: var(--text-primary);
         }
 
-        .message-time {
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-        }
-
-        .delete-btn {
-            position: absolute;
-            right: 8px;
-            top: 8px;
-            background: rgba(0,0,0,0.5);
-            border: none;
+        .message-text {
             color: var(--text-primary);
-            border-radius: 4px;
-            padding: 4px;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.2s;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
-        .delete-btn:hover {
-            background: #ed4245;
-        }
-
+        /* Input Area */
         .chat-input {
-            padding: 16px;
+            padding: 1rem;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
             display: flex;
-            gap: 12px;
+            gap: 1rem;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 12px;
+            padding: 0.75rem 1rem;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-primary);
+            font-size: 1rem;
         }
 
         button {
-            padding: 12px 24px;
+            padding: 0.75rem 1.5rem;
             background: var(--accent-primary);
             border: none;
             border-radius: 8px;
             color: white;
             cursor: pointer;
-            transition: background 0.2s;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
         button:hover {
@@ -231,7 +244,7 @@
             <h2>Channels</h2>
             <div class="channels">
                 <div class="channel active" data-channel="1347720437819379753">📚 General</div>
-                <div class="channel" data-channel="1347720437819379755">💬 General 2</div>
+                <div class="channel" data-channel="13477204378193797552">💬 General 2</div>
                 <div class="channel" data-channel="1347720437819379754">🎮 Games</div>
             </div>
         </aside>
@@ -254,7 +267,6 @@
         const API_BASE = "https://discord-chat-bot-6t2n.onrender.com";
         let currentChannel = "1347720437819379753";
         let username = localStorage.getItem("studyhall-username");
-        let messageCache = new Set();
 
         async function handleLogin(event) {
             event.preventDefault();
@@ -266,7 +278,6 @@
                 document.getElementById("messageInput").disabled = false;
                 document.querySelector("button").disabled = false;
                 loadMessages();
-                startPolling();
             }
         }
 
@@ -274,55 +285,25 @@
             try {
                 const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
                 const messages = await response.json();
-                renderMessages(messages);
+                const container = document.getElementById("messages");
+                
+                container.innerHTML = messages.map(msg => `
+                    <div class="message ${msg.source === 'web' ? 'self' : ''}">
+                        ${msg.source !== 'web' ? `
+                            <img class="avatar" src="${msg.avatar}">
+                        ` : ''}
+                        <div class="message-content">
+                            <div class="message-author">${msg.username}</div>
+                            <div class="message-text">${msg.content}</div>
+                        </div>
+                    </div>
+                `).join("");
+                
+                container.scrollTop = container.scrollHeight;
             } catch (error) {
                 console.error("Error loading messages:", error);
+                alert("Failed to load messages");
             }
-        }
-
-        function renderMessages(messages) {
-            const container = document.getElementById("messages");
-            const newMessages = messages.filter(msg => !messageCache.has(msg.id));
-            
-            newMessages.forEach(msg => {
-                const element = createMessageElement(msg);
-                container.appendChild(element);
-                messageCache.add(msg.id);
-            });
-
-            // Remove deleted messages
-            Array.from(container.children).forEach(child => {
-                if (!messages.some(msg => msg.id === child.dataset.id)) {
-                    child.remove();
-                    messageCache.delete(child.dataset.id);
-                }
-            });
-
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function createMessageElement(msg) {
-            const element = document.createElement("div");
-            element.className = `message ${msg.source === 'web' ? 'self' : ''}`;
-            element.dataset.id = msg.id;
-            element.innerHTML = `
-                ${msg.source !== 'web' ? `
-                    <img class="avatar" src="${msg.avatar}">
-                ` : ''}
-                <div class="message-content">
-                    ${msg.source === 'web' ? `
-                        <button class="delete-btn" onclick="deleteMessage('${msg.id}')">✕</button>
-                    ` : ''}
-                    <div class="message-header">
-                        <span class="message-author">${msg.username}</span>
-                        <span class="message-time">
-                            ${new Date(msg.timestamp).toLocaleTimeString()}
-                        </span>
-                    </div>
-                    <div class="message-text">${msg.content}</div>
-                </div>
-            `;
-            return element;
         }
 
         async function sendMessage() {
@@ -331,18 +312,6 @@
             if (!content) return;
 
             try {
-                // Optimistic update
-                const tempId = `temp-${Date.now()}`;
-                const tempElement = createMessageElement({
-                    id: tempId,
-                    username,
-                    content,
-                    source: 'web',
-                    timestamp: Date.now()
-                });
-                document.getElementById("messages").appendChild(tempElement);
-                input.value = "";
-
                 const response = await fetch(`${API_BASE}/send`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -353,8 +322,7 @@
                     })
                 });
 
-                // Remove temporary message after confirmation
-                tempElement.remove();
+                input.value = "";
                 await loadMessages();
                 
             } catch (error) {
@@ -363,33 +331,12 @@
             }
         }
 
-        async function deleteMessage(messageId) {
-            try {
-                const response = await fetch(`${API_BASE}/messages/${currentChannel}/${messageId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) throw new Error('Failed to delete message');
-                await loadMessages();
-            } catch (error) {
-                console.error("Error deleting message:", error);
-                alert("Failed to delete message");
-            }
-        }
-
-        // Real-time polling
-        let pollingInterval;
-        function startPolling() {
-            pollingInterval = setInterval(loadMessages, 1000);
-        }
-
         // Channel switching
         document.querySelectorAll(".channel").forEach(channel => {
             channel.addEventListener("click", function() {
                 currentChannel = this.dataset.channel;
                 document.querySelectorAll(".channel").forEach(c => c.classList.remove("active"));
                 this.classList.add("active");
-                messageCache.clear();
                 loadMessages();
             });
         });
@@ -400,9 +347,9 @@
             document.getElementById("messageInput").disabled = false;
             document.querySelector("button").disabled = false;
             loadMessages();
-            startPolling();
         }
 
+        // Message input handling
         document.getElementById("messageInput").addEventListener("keypress", (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
