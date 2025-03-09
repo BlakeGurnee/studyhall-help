@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,6 +13,49 @@
             height: 100vh;
             margin: 0;
         }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #2c2f33;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 300px;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #40444b;
+            border: none;
+            border-radius: 5px;
+            color: white;
+        }
+        .modal-content button {
+            background: #5865f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-content button:hover {
+            background: #4752c4;
+        }
+        /* Original chat styles */
         .chat-container {
             display: flex;
             width: 100%;
@@ -64,7 +106,7 @@
             padding: 15px;
             overflow-y: auto;
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse;
         }
         .message {
             padding: 10px;
@@ -115,15 +157,26 @@
     </style>
 </head>
 <body>
+    <!-- Sign-in Modal -->
+    <div id="signin-modal" class="modal">
+        <div class="modal-content">
+            <h2>Sign In</h2>
+            <form onsubmit="handleSignIn(event)">
+                <input type="text" id="usernameInput" placeholder="Enter your name" required autofocus>
+                <button type="submit">Join Chat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chat Container -->
     <div class="chat-container">
         <aside class="sidebar">
             <h2>Server</h2>
             <nav>
                 <ul>
                     <li class="active" onclick="changeChannel('1347720437819379753', this)">General</li>
-                    <li onclick="changeChannel('channel2', this)">General 2</li>
-                    <li onclick="changeChannel('channel3', this)">General 3</li>
-                    <li onclick="changeChannel('bots', this)">Bots</li>
+                    <li onclick="changeChannel('1347720437819379755', this)">General2</li>
+                    <li onclick="changeChannel('1347720437819379754', this)">Game Requests</li>
                 </ul>
             </nav>
         </aside>
@@ -131,35 +184,87 @@
             <header class="chat-header" id="chat-title">General</header>
             <div class="messages" id="messages"></div>
             <footer class="chat-input">
-                <input type="text" id="messageInput" placeholder="Type a message..." onkeydown="handleKeyPress(event)">
-                <button onclick="sendMessage()">Send</button>
+                <input type="text" id="messageInput" placeholder="Type a message..." 
+                       onkeydown="handleKeyPress(event)" disabled>
+                <button onclick="sendMessage()" disabled>Send</button>
             </footer>
         </main>
     </div>
-    <script>
-        let currentChannelId = "1347720437819379753";
-        const apiBaseUrl = "http://localhost:3000"; 
 
+    <script>
+        // Chat Configuration
+        let currentChannelId = "1347720437819379753";
+        const apiBaseUrl = "http://localhost:3000";
+
+        // Sign-in Handling
+        function handleSignIn(event) {
+            event.preventDefault();
+            const username = document.getElementById('usernameInput').value.trim();
+            if (username) {
+                localStorage.setItem('username', username);
+                document.getElementById('signin-modal').style.display = 'none';
+                // Enable chat functionality
+                document.getElementById('messageInput').disabled = false;
+                document.querySelector('.chat-input button').disabled = false;
+                document.getElementById('messageInput').focus();
+            }
+        }
+
+        // Check for existing user on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('username');
+            const modal = document.getElementById('signin-modal');
+            
+            if (!username) {
+                modal.style.display = 'flex';
+            } else {
+                modal.style.display = 'none';
+                document.getElementById('messageInput').disabled = false;
+                document.querySelector('.chat-input button').disabled = false;
+            }
+        });
+
+        // Chat Functions
         async function fetchMessages() {
-            const res = await fetch(`${apiBaseUrl}/messages/${currentChannelId}`);
-            const messages = await res.json();
-            const chatbox = document.getElementById("messages");
-            chatbox.innerHTML = messages
-                .map(msg => `<div class="message"><img class="avatar" src="${msg.avatar}" /><strong>${msg.username}:</strong> ${msg.content}</div>`)
-                .join("");
-            chatbox.scrollTop = chatbox.scrollHeight;
+            try {
+                const res = await fetch(`${apiBaseUrl}/messages/${currentChannelId}`);
+                const messages = await res.json();
+                const chatbox = document.getElementById("messages");
+
+                chatbox.innerHTML = messages
+                    .map(msg => `
+                        <div class="message">
+                            <img class="avatar" src="${msg.avatar}" />
+                            <strong>${msg.username || 'Anonymous'}:</strong> ${msg.content}
+                        </div>
+                    `)
+                    .join("");
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
         }
 
         async function sendMessage() {
-            const content = document.getElementById("messageInput").value;
-            if (!content.trim()) return;
-            await fetch(`${apiBaseUrl}/send`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ channelId: currentChannelId, content })
-            });
-            document.getElementById("messageInput").value = "";
-            fetchMessages();
+            const content = document.getElementById("messageInput").value.trim();
+            if (!content) return;
+
+            const username = localStorage.getItem('username');
+            
+            try {
+                await fetch(`${apiBaseUrl}/send`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        channelId: currentChannelId,
+                        content,
+                        username
+                    })
+                });
+                document.getElementById("messageInput").value = "";
+                fetchMessages();
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
         }
 
         function handleKeyPress(event) {
@@ -176,6 +281,7 @@
             fetchMessages();
         }
 
+        // Initialize chat
         setInterval(fetchMessages, 5000);
         fetchMessages();
     </script>
