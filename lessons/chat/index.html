@@ -5,95 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyHall Chat</title>
     <style>
-        :root {
-            --background: #1e1e1e;
-            --primary: #5865f2;
-            --text: #ffffff;
-            --secondary: #2c2f33;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Helvetica Neue', sans-serif;
-            background: var(--background);
-            color: var(--text);
-            height: 100vh;
-            display: flex;
-        }
-
-        .chat-container {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-        }
-
-        .sidebar {
-            width: 240px;
-            background: var(--secondary);
-            padding: 20px;
-            border-right: 1px solid #36393f;
-        }
-
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column-reverse;
-        }
-
-        .message {
-            display: flex;
-            gap: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: var(--secondary);
-            border-radius: 8px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .chat-input {
-            padding: 20px;
-            background: var(--secondary);
-            border-top: 1px solid #36393f;
-            display: flex;
-            gap: 15px;
-        }
-
-        input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #40444b;
-            border-radius: 8px;
-            background: #40444b;
-            color: var(--text);
-            font-size: 16px;
-        }
-
-        button {
+        /* Add error message styling */
+        .error-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ed4245;
+            color: white;
             padding: 12px 24px;
-            background: var(--primary);
-            border: none;
             border-radius: 8px;
-            color: var(--text);
-            cursor: pointer;
-            transition: background 0.2s;
+            animation: slideUp 0.3s ease;
+            z-index: 1000;
         }
 
-        button:hover {
-            background: #4752c4;
+        @keyframes slideUp {
+            from { bottom: -50px; }
+            to { bottom: 20px; }
         }
     </style>
 </head>
@@ -122,91 +50,91 @@
     </div>
 
     <script>
-        const API_BASE = "https://your-render-service.onrender.com"; // UPDATE THIS
+        // 1. UPDATE THIS TO YOUR RENDER URL
+        const API_BASE = "https://your-render-service.onrender.com";
+        
+        // 2. SIMPLIFIED MESSAGE HANDLING
         let currentChannel = "1347720437819379753";
-
-        // Auth handling
-        let username = localStorage.getItem("studyhall-username");
-        if (!username) {
-            username = prompt("Welcome to StudyHall!\nPlease enter your display name:");
-            if (username) {
-                localStorage.setItem("studyhall-username", username.trim());
-            } else {
-                alert("Username is required to participate.");
-                window.location.reload();
-            }
-        }
+        let username = localStorage.getItem("studyhall-username") || prompt("Enter your username:");
 
         async function fetchMessages() {
             try {
-                const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
-                const messages = await response.json();
+                const res = await fetch(`${API_BASE}/messages/${currentChannel}`);
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
                 
-                const messagesContainer = document.getElementById("messages");
-                messagesContainer.innerHTML = messages.map(msg => `
-                    <div class="message">
-                        <img class="avatar" 
-                            src="${msg.avatar}" 
-                            alt="${msg.username}"
-                            onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
-                        <div>
-                            <strong>${msg.username}</strong>
-                            <p>${msg.content}</p>
+                const messages = await res.json();
+                document.getElementById("messages").innerHTML = messages
+                    .map(msg => `
+                        <div class="message">
+                            <img class="avatar" 
+                                src="${msg.avatar}" 
+                                onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                            <div>
+                                <strong>${msg.username}</strong>
+                                <p>${msg.content}</p>
+                            </div>
                         </div>
-                    </div>
-                `).join("");
+                    `).join("");
             } catch (error) {
-                console.error("Fetch error:", error);
+                showError(error.message);
             }
         }
 
         async function sendMessage() {
             const input = document.getElementById("messageInput");
-            const content = input.value.trim();
-            if (!content) return;
-
             try {
-                await fetch(`${API_BASE}/send`, {
+                const res = await fetch(`${API_BASE}/send`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer studyhall"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         channelId: currentChannel,
-                        content: content,
+                        content: input.value.trim(),
                         username: username
                     })
                 });
                 
+                if (!res.ok) throw new Error("Failed to send message");
                 input.value = "";
                 fetchMessages();
             } catch (error) {
-                console.error("Send error:", error);
+                showError(error.message);
             }
         }
 
         // Channel switching
         document.querySelectorAll(".channel").forEach(channel => {
             channel.addEventListener("click", function() {
+                currentChannel = this.dataset.channel;
                 document.querySelectorAll(".channel").forEach(c => c.classList.remove("active"));
                 this.classList.add("active");
-                currentChannel = this.dataset.channel;
                 fetchMessages();
             });
         });
 
-        // Initial load
-        fetchMessages();
-        setInterval(fetchMessages, 3000);
+        // Initial setup
+        if (!username) {
+            alert("Username is required!");
+            window.location.reload();
+        } else {
+            localStorage.setItem("studyhall-username", username);
+            fetchMessages();
+            setInterval(fetchMessages, 3000);
+            
+            document.getElementById("messageInput").addEventListener("keypress", e => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
 
-        // Enter key handler
-        document.getElementById("messageInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+        function showError(message) {
+            const toast = document.createElement("div");
+            toast.className = "error-toast";
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
     </script>
 </body>
 </html>
