@@ -6,15 +6,13 @@
     <title>StudyHall Chat</title>
     <style>
         :root {
-            --bg-primary: #0d0d0d;
-            --bg-secondary: #1a1a1a;
-            --bg-tertiary: #262626;
+            --bg-primary: #36393f;
+            --bg-secondary: #2f3136;
+            --bg-tertiary: #40444b;
             --accent-primary: #5865f2;
-            --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --border-color: #333333;
-            --message-user: #2b2d31;
-            --message-other: #383b40;
+            --text-primary: #dcddde;
+            --text-secondary: #b9bbbe;
+            --border-color: #202225;
         }
 
         * {
@@ -24,7 +22,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             height: 100vh;
@@ -47,29 +45,27 @@
 
         .modal-content {
             background: var(--bg-secondary);
-            padding: 2.5rem;
-            border-radius: 12px;
+            padding: 2rem;
+            border-radius: 8px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
         .modal-content h2 {
+            color: #fff;
             margin-bottom: 1.5rem;
             font-weight: 600;
-            text-align: center;
         }
 
         .modal-content input {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 1.5rem;
+            padding: 10px;
+            margin-bottom: 1rem;
             background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
             color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.2s;
+            font-size: 14px;
         }
 
         /* Main Chat Layout */
@@ -81,42 +77,23 @@
 
         /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 240px;
             background: var(--bg-secondary);
-            padding: 1.5rem;
+            padding: 16px;
             border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar h2 {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-        }
-
-        .channels {
-            flex: 1;
-            margin-top: 1rem;
         }
 
         .channel {
-            padding: 0.75rem 1rem;
-            margin: 0.25rem 0;
-            border-radius: 6px;
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
             cursor: pointer;
             color: var(--text-secondary);
             transition: all 0.2s;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .channel:hover {
-            background: var(--bg-tertiary);
+            background: rgba(79,84,92,0.4);
             color: var(--text-primary);
         }
 
@@ -134,23 +111,22 @@
 
         .messages {
             flex: 1;
-            padding: 2rem;
+            padding: 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
         }
 
         .message {
             display: flex;
-            gap: 1rem;
-            max-width: 75%;
-            width: fit-content;
-            animation: messageIn 0.3s ease;
+            gap: 16px;
+            margin: 8px 0;
+            padding: 4px 16px;
+            position: relative;
         }
 
-        .message.self {
-            align-self: flex-end;
+        .message:hover {
+            background: rgba(4,4,5,0.07);
         }
 
         .avatar {
@@ -163,88 +139,65 @@
         }
 
         .message-content {
-            background: var(--message-other);
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            line-height: 1.4;
-            position: relative;
-            max-width: 600px;
-            word-break: break-word;
+            max-width: 800px;
         }
 
-        .message.self .message-content {
-            background: var(--accent-primary);
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
         }
 
         .message-author {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+            font-weight: 500;
             color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-size: 1rem;
         }
 
         .message-time {
-            font-size: 0.75rem;
             color: var(--text-secondary);
-            font-weight: 400;
+            font-size: 0.75rem;
         }
 
         .message-text {
             color: var(--text-primary);
             font-size: 0.95rem;
-            line-height: 1.5;
+            line-height: 1.375;
+            word-break: break-word;
         }
 
         /* Input Area */
         .chat-input {
-            padding: 1.5rem;
+            padding: 16px;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
             display: flex;
-            gap: 1rem;
-            position: sticky;
-            bottom: 0;
+            gap: 8px;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 1rem;
+            padding: 10px 12px;
             background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
             color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
+            font-size: 14px;
         }
 
         button {
-            padding: 1rem 1.5rem;
+            padding: 10px 16px;
             background: var(--accent-primary);
             border: none;
-            border-radius: 8px;
+            border-radius: 3px;
             color: white;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            font-weight: 500;
         }
 
         button:hover {
             background: #4752c4;
-            transform: translateY(-1px);
-        }
-
-        @keyframes messageIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -310,20 +263,15 @@
         async function loadMessages() {
             try {
                 const response = await fetch(`${API_BASE}/messages/${currentChannel}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
                 const messages = await response.json();
                 const container = document.getElementById("messages");
                 
-                // Clear and reverse messages to show newest at bottom
                 container.innerHTML = messages.reverse().map(msg => `
-                    <div class="message ${msg.origin === 'web' ? 'self' : ''}">
-                        ${msg.origin !== 'web' ? `
-                            <img class="avatar" src="${msg.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}">
-                        ` : ''}
+                    <div class="message">
+                        <img class="avatar" src="${msg.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}">
                         <div class="message-content">
-                            <div class="message-author">
-                                ${msg.username}
+                            <div class="message-header">
+                                <span class="message-author">${msg.username}</span>
                                 <span class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</span>
                             </div>
                             <div class="message-text">${msg.content}</div>
@@ -344,22 +292,6 @@
             if (!content) return;
 
             try {
-                // Optimistic update
-                const tempMsg = document.createElement("div");
-                tempMsg.className = "message self";
-                tempMsg.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-author">
-                            You
-                            <span class="message-time">${new Date().toLocaleTimeString()}</span>
-                        </div>
-                        <div class="message-text">${content}</div>
-                    </div>
-                `;
-                document.getElementById("messages").appendChild(tempMsg);
-                input.value = "";
-                document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-
                 const response = await fetch(`${API_BASE}/send`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -370,7 +302,7 @@
                     })
                 });
 
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                input.value = "";
                 await loadMessages();
                 
             } catch (error) {
