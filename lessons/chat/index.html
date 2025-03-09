@@ -1,289 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #1e1e1e;
-            color: white;
-            display: flex;
-            height: 100vh;
-            margin: 0;
-        }
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: #2c2f33;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-            min-width: 300px;
-        }
-        .modal-content h2 {
-            margin-bottom: 20px;
-        }
-        .modal-content input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #40444b;
-            border: none;
-            border-radius: 5px;
-            color: white;
-        }
-        .modal-content button {
-            background: #5865f2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .modal-content button:hover {
-            background: #4752c4;
-        }
-        /* Original chat styles */
-        .chat-container {
-            display: flex;
-            width: 100%;
-        }
-        .sidebar {
-            width: 250px;
-            background: #2c2f33;
-            padding: 20px;
-        }
-        .sidebar h2 {
-            margin-bottom: 15px;
-            font-size: 20px;
-            text-align: center;
-            color: #fff;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar li {
-            padding: 12px;
-            cursor: pointer;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #b9bbbe;
-        }
-        .sidebar .active, .sidebar li:hover {
-            background: #3a3d42;
-            color: #fff;
-        }
-        .chat-window {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #36393f;
-        }
-        .chat-header {
-            padding: 15px;
-            background: #2f3136;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column-reverse;
-        }
-        .message {
-            padding: 10px;
-            border-radius: 8px;
-            background: #424549;
-            margin-bottom: 10px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-        }
-        .message strong {
-            color: #ffffff;
-            margin-right: 10px;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .chat-input {
-            display: flex;
-            padding: 15px;
-            background: #2f3136;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background: #40444b;
-            color: white;
-            font-size: 14px;
-        }
-        .chat-input button {
-            padding: 10px;
-            margin-left: 10px;
-            background: #5865f2;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .chat-input button:hover {
-            background: #4752c4;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background: #1e1e1e;
+        color: white;
+        display: flex;
+        height: 100vh;
+        margin: 0;
+      }
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background: #2c2f33;
+        padding: 30px;
+        border-radius: 8px;
+        text-align: center;
+        min-width: 300px;
+      }
+      .modal-content h2 {
+        margin-bottom: 20px;
+      }
+      .modal-content input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        background: #40444b;
+        border: none;
+        border-radius: 5px;
+        color: white;
+      }
+      .modal-content button {
+        background: #5865f2;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .modal-content button:hover {
+        background: #4752c4;
+      }
+      /* Original chat styles */
+      .chat-container {
+        display: flex;
+        width: 100%;
+      }
+      .sidebar {
+        width: 250px;
+        background: #2c2f33;
+        padding: 20px;
+      }
+      .sidebar h2 {
+        margin-bottom: 15px;
+        font-size: 20px;
+        text-align: center;
+        color: #fff;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+      }
+      .sidebar li {
+        padding: 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        color: #b9bbbe;
+      }
+      .sidebar .active,
+      .sidebar li:hover {
+        background: #3a3d42;
+        color: #fff;
+      }
+      .chat-window {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #36393f;
+      }
+      .chat-header {
+        padding: 15px;
+        background: #2f3136;
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+      }
+      .messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column-reverse;
+      }
+      .message {
+        padding: 10px;
+        border-radius: 8px;
+        background: #424549;
+        margin-bottom: 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+      }
+      .message strong {
+        color: #ffffff;
+        margin-right: 10px;
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+      .chat-input {
+        display: flex;
+        padding: 15px;
+        background: #2f3136;
+      }
+      .chat-input input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background: #40444b;
+        color: white;
+        font-size: 14px;
+      }
+      .chat-input button {
+        padding: 10px;
+        margin-left: 10px;
+        background: #5865f2;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .chat-input button:hover {
+        background: #4752c4;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Sign-in Modal -->
     <div id="signin-modal" class="modal">
-        <div class="modal-content">
-            <h2>Sign In</h2>
-            <form onsubmit="handleSignIn(event)">
-                <input type="text" id="usernameInput" placeholder="Enter your name" required autofocus>
-                <button type="submit">Join Chat</button>
-            </form>
-        </div>
+      <div class="modal-content">
+        <h2>Sign In</h2>
+        <form onsubmit="handleSignIn(event)">
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="Enter your name"
+            required
+            autofocus
+          />
+          <button type="submit">Join Chat</button>
+        </form>
+      </div>
     </div>
 
     <!-- Chat Container -->
     <div class="chat-container">
-        <aside class="sidebar">
-            <h2>Server</h2>
-            <nav>
-                <ul>
-                    <li class="active" onclick="changeChannel('1347720437819379753', this)">General</li>
-                    <li onclick="changeChannel('1347720437819379755', this)">General2</li>
-                    <li onclick="changeChannel('1347720437819379754', this)">Game Requests</li>
-                </ul>
-            </nav>
-        </aside>
-        <main class="chat-window">
-            <header class="chat-header" id="chat-title">General</header>
-            <div class="messages" id="messages"></div>
-            <footer class="chat-input">
-                <input type="text" id="messageInput" placeholder="Type a message..." 
-                       onkeydown="handleKeyPress(event)" disabled>
-                <button onclick="sendMessage()" disabled>Send</button>
-            </footer>
-        </main>
+      <aside class="sidebar">
+        <h2>Server</h2>
+        <nav>
+          <ul>
+            <li
+              class="active"
+              onclick="changeChannel('1347720437819379753', this)"
+            >
+              General
+            </li>
+            <li onclick="changeChannel('1347720437819379755', this)">
+              General2
+            </li>
+            <li onclick="changeChannel('1347720437819379754', this)">
+              Game Requests
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="chat-window">
+        <header class="chat-header" id="chat-title">General</header>
+        <div class="messages" id="messages"></div>
+        <footer class="chat-input">
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Type a message..."
+            onkeydown="handleKeyPress(event)"
+            disabled
+          />
+          <button onclick="sendMessage()" disabled>Send</button>
+        </footer>
+      </main>
     </div>
 
     <script>
-        // Chat Configuration
-        let currentChannelId = "1347720437819379753";
-        const apiBaseUrl = "http://localhost:3000";
+      // Chat Configuration
+      let currentChannelId = "1347720437819379753";
+      const apiBaseUrl = "http://localhost:3000";
 
-        // Sign-in Handling
-        function handleSignIn(event) {
-            event.preventDefault();
-            const username = document.getElementById('usernameInput').value.trim();
-            if (username) {
-                localStorage.setItem('username', username);
-                document.getElementById('signin-modal').style.display = 'none';
-                // Enable chat functionality
-                document.getElementById('messageInput').disabled = false;
-                document.querySelector('.chat-input button').disabled = false;
-                document.getElementById('messageInput').focus();
-            }
+      // Sign-in Handling
+      function handleSignIn(event) {
+        event.preventDefault();
+        const username = document.getElementById("usernameInput").value.trim();
+        if (username) {
+          localStorage.setItem("username", username);
+          document.getElementById("signin-modal").style.display = "none";
+          // Enable chat functionality
+          document.getElementById("messageInput").disabled = false;
+          document.querySelector(".chat-input button").disabled = false;
+          document.getElementById("messageInput").focus();
         }
+      }
 
-        // Check for existing user on load
-        document.addEventListener('DOMContentLoaded', () => {
-            const username = localStorage.getItem('username');
-            const modal = document.getElementById('signin-modal');
-            
-            if (!username) {
-                modal.style.display = 'flex';
-            } else {
-                modal.style.display = 'none';
-                document.getElementById('messageInput').disabled = false;
-                document.querySelector('.chat-input button').disabled = false;
-            }
-        });
+      // Check for existing user on load
+      document.addEventListener("DOMContentLoaded", () => {
+        const username = localStorage.getItem("username");
+        const modal = document.getElementById("signin-modal");
 
-        // Chat Functions
-        async function fetchMessages() {
-            try {
-                const res = await fetch(`${apiBaseUrl}/messages/${currentChannelId}`);
-                const messages = await res.json();
-                const chatbox = document.getElementById("messages");
+        if (!username) {
+          modal.style.display = "flex";
+        } else {
+          modal.style.display = "none";
+          document.getElementById("messageInput").disabled = false;
+          document.querySelector(".chat-input button").disabled = false;
+        }
+      });
 
-                chatbox.innerHTML = messages
-                    .map(msg => `
+      // Chat Functions
+      async function fetchMessages() {
+        try {
+          const res = await fetch(`${apiBaseUrl}/messages/${currentChannelId}`);
+          const messages = await res.json();
+          const chatbox = document.getElementById("messages");
+
+          chatbox.innerHTML = messages
+            .map(
+              (msg) => `
                         <div class="message">
                             <img class="avatar" src="${msg.avatar}" />
-                            <strong>${msg.username || 'Anonymous'}:</strong> ${msg.content}
+                            <strong>${msg.username || "Anonymous"}:</strong> ${
+                msg.content
+              }
                         </div>
-                    `)
-                    .join("");
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-            }
+                    `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error fetching messages:", error);
         }
+      }
 
-        async function sendMessage() {
-            const content = document.getElementById("messageInput").value.trim();
-            if (!content) return;
+      async function sendMessage() {
+        const content = document.getElementById("messageInput").value.trim();
+        if (!content) return;
 
-            const username = localStorage.getItem('username');
-            
-            try {
-                await fetch(`${apiBaseUrl}/send`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        channelId: currentChannelId,
-                        content,
-                        username
-                    })
-                });
-                document.getElementById("messageInput").value = "";
-                fetchMessages();
-            } catch (error) {
-                console.error('Error sending message:', error);
-            }
+        const username = localStorage.getItem("username");
+
+        try {
+          // Send username with message
+          await fetch(`${apiBaseUrl}/send`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              channelId: currentChannelId,
+              content: content,
+              username: username, // <- This is what we're adding
+            }),
+          });
+          document.getElementById("messageInput").value = "";
+          fetchMessages();
+        } catch (error) {
+          console.error("Error sending message:", error);
         }
+      }
 
-        function handleKeyPress(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          sendMessage();
         }
+      }
 
-        function changeChannel(channelId, element) {
-            currentChannelId = channelId;
-            document.getElementById("chat-title").innerText = element.innerText;
-            document.querySelectorAll(".sidebar li").forEach(li => li.classList.remove("active"));
-            element.classList.add("active");
-            fetchMessages();
-        }
-
-        // Initialize chat
-        setInterval(fetchMessages, 5000);
+      function changeChannel(channelId, element) {
+        currentChannelId = channelId;
+        document.getElementById("chat-title").innerText = element.innerText;
+        document
+          .querySelectorAll(".sidebar li")
+          .forEach((li) => li.classList.remove("active"));
+        element.classList.add("active");
         fetchMessages();
+      }
+
+      // Initialize chat
+      setInterval(fetchMessages, 5000);
+      fetchMessages();
     </script>
-</body>
+  </body>
 </html>
